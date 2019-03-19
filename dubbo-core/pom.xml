@@ -11,5 +11,42 @@
 
     <artifactId>dubbo-core</artifactId>
 
-
+    <build>
+        <plugins>
+            <!--解决乱码，maven打包默认编码为GBK -->
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.makenv.Main</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+            </plugin>
+            <!--解决乱码end -->
+        </plugins>
+        <resources>
+            <!--解决没有将配置文件打包进去的bug -->
+            <resource>
+                <directory>META-INF</directory>
+                <includes>
+                    <include>**/*.xsd</include>
+                    <include>**/*.handlers</include>
+                    <include>**/*.schemas</include>
+                </includes>
+                <targetPath>META-INF</targetPath>
+            </resource>
+        </resources>
+    </build>
 </project>

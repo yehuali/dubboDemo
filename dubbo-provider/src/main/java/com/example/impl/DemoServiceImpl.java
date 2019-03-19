@@ -20,8 +20,9 @@ public class DemoServiceImpl implements DemoService {
 
     @Override
     public Result sayHello(String localName) {
-        logger.info("[" + new SimpleDateFormat("HH:mm:ss").format(new Date()) + "] Hello " + name + ", request from consumer: " + RpcContext
-                .getContext().getRemoteAddress());
-        return new Result(name, "Hello " + localName + ", response from provider: " + RpcContext.getContext().getLocalAddress());
+//        logger.info("[" + new SimpleDateFormat("HH:mm:ss").format(new Date()) + "] Hello " + name + ", request from consumer: " + RpcContext
+//                .getContext().getRemoteAddress());
+//        return new Result(name, "Hello " + localName + ", response from provider: " + RpcContext.getContext().getLocalAddress());
+        return null;
     }
 }
