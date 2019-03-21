@@ -214,6 +214,14 @@ public class URL implements Serializable {
         return value;
     }
 
+    public boolean getParameter(String key, boolean defaultValue) {
+        String value = getParameter(key);
+        if (value == null || value.length() == 0) {
+            return defaultValue;
+        }
+        return Boolean.parseBoolean(value);
+    }
+
     public String getParameter(String key) {
         String value = parameters.get(key);
         if (value == null || value.length() == 0) {

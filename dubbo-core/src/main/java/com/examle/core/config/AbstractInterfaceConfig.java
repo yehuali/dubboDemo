@@ -1,8 +1,11 @@
 package com.examle.core.config;
 
 import com.examle.core.common.URL;
+import com.examle.core.common.extension.ExtensionLoader;
 import com.examle.core.config.context.ConfigManager;
 import com.examle.core.config.support.Parameter;
+import com.examle.core.configcenter.DynamicConfiguration;
+import com.examle.core.configcenter.DynamicConfigurationFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +49,23 @@ public abstract  class AbstractInterfaceConfig extends AbstractMethodConfig {
     void startConfigCenter() {
         if (this.configCenter != null) {
             this.configCenter.refresh();
+            prepareEnvironment();
         }
+    }
+
+    private void prepareEnvironment() {
+        if (configCenter.isValid()) {
+            DynamicConfiguration dynamicConfiguration = getDynamicConfiguration(configCenter.toUrl());
+        }
+    }
+
+    private DynamicConfiguration getDynamicConfiguration(URL url) {
+        DynamicConfigurationFactory factories = ExtensionLoader
+                .getExtensionLoader(DynamicConfigurationFactory.class)
+                .getExtension(url.getProtocol());
+        DynamicConfiguration configuration = factories.getDynamicConfiguration(url);
+        Environment.getInstance().setDynamicConfiguration(configuration);
+        return configuration;
     }
 
     public ModuleConfig getModule() {
@@ -61,4 +80,5 @@ public abstract  class AbstractInterfaceConfig extends AbstractMethodConfig {
         ConfigManager.getInstance().setApplication(application);
         this.application = application;
     }
+
 }

@@ -3,9 +3,11 @@ package com.examle.core.config;
 import com.examle.core.common.Constants;
 import com.examle.core.common.URL;
 import com.examle.core.common.bytecode.Wrapper;
+import com.examle.core.common.extension.ExtensionLoader;
 import com.examle.core.common.utils.StringUtils;
 import com.examle.core.config.context.ConfigManager;
 import com.examle.core.config.support.Parameter;
+import com.examle.core.rpc.Protocol;
 import com.examle.core.rpc.model.ApplicationModel;
 import com.examle.core.rpc.model.ProviderModel;
 
@@ -43,6 +45,10 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
      * The interface name of the exported service
      */
     private String interfaceName;
+
+    private static final Protocol protocol = ExtensionLoader.getExtensionLoader(Protocol.class).getAdaptiveExtension();
+
+    private static final ProxyFactory proxyFactory = ExtensionLoader.getExtensionLoader(ProxyFactory.class).getAdaptiveExtension();
 
 
     @Parameter(excluded = true)
@@ -107,15 +113,18 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         }else{
             String[] methods = Wrapper.getWrapper(interfaceClass).getMethodNames();
             if(methods.length == 0){
-
             }else{
                 map.put(Constants.METHODS_KEY, StringUtils.join(new HashSet<String>(Arrays.asList(methods)), ","));
             }
         }
 
-        String host = "";
-        Integer port = 8080;
+        String host = "192.168.1.100";
+        Integer port = 20880;
         URL url = new URL(name, host, port, path, map);
+
+        String scope = null;
+        //如果配置不是远程的，导出到本地(只有在配置是远程的时候才导出到远程)
+        exportLocal(url);
     }
 
     @Parameter(excluded = true)
@@ -169,6 +178,12 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         if (!Constants.LOCAL_PROTOCOL.equalsIgnoreCase(url.getProtocol())) {
 //            Exporter<?> exporter = protocol.export(
 //                    proxyFactory.getInvoker(ref, (Class) interfaceClass, local));
+            /**
+             * 将协议改为injvm，IP:127.0.0.1,端口为0
+             */
+            URL local = url;
+            Exporter<?> exporter = protocol.export(
+                    proxyFactory.getInvoker(ref, (Class) interfaceClass, local));
         }
     }
 

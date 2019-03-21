@@ -14,6 +14,11 @@ public abstract class AbstractConfig implements Serializable {
     protected String prefix;
 
     @Parameter(excluded = true)
+    public boolean isValid() {
+        return true;
+    }
+
+    @Parameter(excluded = true)
     public String getId() {
         return id;
     }

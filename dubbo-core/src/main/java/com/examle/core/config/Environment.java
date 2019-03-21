@@ -12,6 +12,8 @@ public class Environment {
 
     private Map<String, SystemConfiguration> systemConfigs = new ConcurrentHashMap<>();
 
+    private Configuration dynamicConfiguration;
+
     public static Environment getInstance() {
         return INSTANCE;
     }
@@ -42,6 +44,10 @@ public class Environment {
         }
         return Constants.DUBBO;
 
+    }
+
+    public void setDynamicConfiguration(Configuration dynamicConfiguration) {
+        this.dynamicConfiguration = dynamicConfiguration;
     }
 
 }

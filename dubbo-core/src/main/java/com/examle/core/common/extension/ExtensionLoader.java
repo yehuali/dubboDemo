@@ -1,5 +1,7 @@
 package com.examle.core.common.extension;
 
+import com.examle.core.common.utils.Holder;
+
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -11,6 +13,7 @@ public class ExtensionLoader<T> {
     private final ExtensionFactory objectFactory;
 
     private static final ConcurrentMap<Class<?>, ExtensionLoader<?>> EXTENSION_LOADERS = new ConcurrentHashMap<Class<?>, ExtensionLoader<?>>();
+    private final ConcurrentMap<String, Holder<Object>> cachedInstances = new ConcurrentHashMap<String, Holder<Object>>();
 
     private ExtensionLoader(Class<?> type) {
         this.type = type;
@@ -45,6 +48,21 @@ public class ExtensionLoader<T> {
 
     private static <T> boolean withExtensionAnnotation(Class<T> type) {
         return type.isAnnotationPresent(SPI.class);
+    }
+
+    /**
+     * 找到具有给定名称的扩展名。如果没有找到指定的名称，则{@link IllegalStateException}
+     * 将被抛出
+     * @param name
+     * @return
+     */
+    public T getExtension(String name) {
+        if (name == null || name.length() == 0) {
+            throw new IllegalArgumentException("Extension name == null");
+        }
+        Holder<Object> holder = cachedInstances.get(name);
+        Object instance = holder.get(); //最终返回ZookeeperDynamicConfigurationFactory
+        return (T) instance;
     }
 
 }

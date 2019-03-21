@@ -22,4 +22,6 @@ public class Constants {
 
     public static final String LOCAL_PROTOCOL = "injvm";
 
+    public static final String CONFIG_CHECK_KEY = "config.check";
+
 }
