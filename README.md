@@ -44,6 +44,13 @@
         }
     }
     ```
+    
+3.  ServiceBean的源码分析
+    - 参考资料：https://github.com/shuaijunlan/shuaijunlan.github.io/blob/master/images/ServiceBean.png?raw=true
+    - ServiceBean类继承关系
+    ![ServiceBean类继承关系](https://github.com/shuaijunlan/shuaijunlan.github.io/blob/master/images/ServiceBean.png?raw=true)
+ 
+         
          
 - 参考资料
     - Dubbo官网：http://dubbo.apache.org/zh-cn/

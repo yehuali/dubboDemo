@@ -1,6 +1,12 @@
 package com.examle.core.common.utils;
 
+import org.springframework.util.CollectionUtils;
+
+import java.util.Collection;
+
 public class StringUtils {
+
+    public static final String EMPTY = "";
 
     public static boolean isEmpty(String str) {
         return str == null || str.isEmpty();
@@ -29,5 +35,27 @@ public class StringUtils {
             }
         }
         return buf == null ? camelName : buf.toString();
+    }
+
+    public static boolean isNotEmpty(String str) {
+        return !isEmpty(str);
+    }
+
+    public static String join(Collection<String> coll, String split) {
+        if (CollectionUtils.isEmpty(coll)) {
+            return EMPTY;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        boolean isFirst = true;
+        for (String s : coll) {
+            if (isFirst) {
+                isFirst = false;
+            } else {
+                sb.append(split);
+            }
+            sb.append(s);
+        }
+        return sb.toString();
     }
 }

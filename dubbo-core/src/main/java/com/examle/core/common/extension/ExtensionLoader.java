@@ -18,27 +18,8 @@ public class ExtensionLoader<T> {
     }
 
     public T getAdaptiveExtension() {
-        Object instance = cachedAdaptiveInstance.get();
-        if (instance == null) {
-            if (createAdaptiveInstanceError == null) {
-                synchronized (cachedAdaptiveInstance) {
-                    instance = cachedAdaptiveInstance.get();
-                    if (instance == null) {
-                        try {
-                            instance = createAdaptiveExtension();
-                            cachedAdaptiveInstance.set(instance);
-                        } catch (Throwable t) {
-                            createAdaptiveInstanceError = t;
-                            throw new IllegalStateException("fail to create adaptive instance: " + t.toString(), t);
-                        }
-                    }
-                }
-            } else {
-                throw new IllegalStateException("fail to create adaptive instance: " + createAdaptiveInstanceError.toString(), createAdaptiveInstanceError);
-            }
-        }
 
-        return (T) instance;
+        return null;
     }
 
     /**
@@ -59,6 +40,7 @@ public class ExtensionLoader<T> {
         if (loader == null) {
             EXTENSION_LOADERS.putIfAbsent(type, new ExtensionLoader<T>(type));
         }
+        return null;
     }
 
     private static <T> boolean withExtensionAnnotation(Class<T> type) {

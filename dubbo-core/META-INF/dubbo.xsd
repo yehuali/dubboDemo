@@ -42,6 +42,103 @@
 
 
 
+    <!--dubbo:service配置开始 -->
+    <xsd:complexType name="abstractMethodType">
+    </xsd:complexType>
+
+    <xsd:complexType name="abstractInterfaceType">
+        <xsd:complexContent>
+            <xsd:extension base="abstractMethodType">
+
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="abstractServiceType">
+        <xsd:complexContent>
+            <xsd:extension base="abstractInterfaceType">
+
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="serviceType">
+        <xsd:complexContent>
+            <xsd:extension base="abstractServiceType">
+                <!-- 仅允许包含在 <choice> 声明中的元素之一出现在包含元素中 unbounded:不做任何限制 -->
+                <xsd:choice minOccurs="0" maxOccurs="unbounded">
+                    <xsd:element ref="method" minOccurs="0" maxOccurs="unbounded"/>
+                    <xsd:element ref="parameter" minOccurs="0" maxOccurs="unbounded"/>
+                    <xsd:element ref="beans:property" minOccurs="0" maxOccurs="unbounded"/>
+                </xsd:choice>
+                <xsd:attribute name="interface" type="xsd:token" use="required">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            <![CDATA[ Defines the interface to advertise for this service in the service registry. ]]></xsd:documentation>
+                        <xsd:appinfo>
+                            <tool:annotation>
+                                <tool:expected-type type="java.lang.Class"/>
+                            </tool:annotation>
+                        </xsd:appinfo>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="ref" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            <![CDATA[ The service implementation instance bean id. ]]></xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="service" type="serviceType">
+        <xsd:annotation>
+            <xsd:documentation><![CDATA[ Export service config ]]></xsd:documentation>
+            <xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="com.examle.core.config.ServiceConfig"/>
+                </tool:annotation>
+            </xsd:appinfo>
+        </xsd:annotation>
+    </xsd:element>
+    <!--dubbo:service配置结束 -->
+
+    <xsd:complexType name="configCenterType">
+        <xsd:attribute name="address" type="xsd:string" use="optional">
+            <xsd:annotation>
+                <xsd:documentation><![CDATA[ The config center address. ]]></xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+
+    <xsd:element name="config-center" type="configCenterType">
+        <xsd:annotation>
+            <xsd:documentation><![CDATA[ The config center config ]]></xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+
+    <!--与dubbo:service有关 -->
+    <xsd:complexType name="methodType">
+    </xsd:complexType>
+
+    <!--registryp 配置开始 -->
+    <xsd:complexType name="registryType">
+    </xsd:complexType>
+
+    <xsd:element name="registry" type="registryType">
+        <xsd:annotation>
+            <xsd:documentation><![CDATA[ The registry config ]]></xsd:documentation>
+            <xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="com.examle.core.config.RegistryConfig"/>
+                </tool:annotation>
+            </xsd:appinfo>
+        </xsd:annotation>
+    </xsd:element>
+    <!--registryp 配置结束 -->
+
+
     <xsd:element name="application" type="applicationType">
         <xsd:annotation>
             <xsd:documentation><![CDATA[ The application config ]]></xsd:documentation>
@@ -56,6 +153,17 @@
     <xsd:element name="parameter" type="parameterType">
         <xsd:annotation>
             <xsd:documentation><![CDATA[ The service url parameter ]]></xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+
+    <xsd:element name="method" type="methodType">
+        <xsd:annotation>
+            <xsd:documentation><![CDATA[ The service method config ]]></xsd:documentation>
+            <xsd:appinfo>
+                <tool:annotation>
+                    <tool:exports type="com.examle.core.config.MethodConfig"/>
+                </tool:annotation>
+            </xsd:appinfo>
         </xsd:annotation>
     </xsd:element>
 

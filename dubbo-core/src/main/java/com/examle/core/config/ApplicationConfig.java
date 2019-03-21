@@ -1,4 +1,4 @@
 package com.examle.core.config;
 
-public class ApplicationConfig {
+public class ApplicationConfig extends AbstractConfig{
 }

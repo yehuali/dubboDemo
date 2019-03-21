@@ -1,11 +1,18 @@
 package com.examle.core.config.spring.schema;
 
+import com.examle.core.common.utils.ReflectUtils;
 import com.examle.core.common.utils.StringUtils;
+import com.examle.core.config.spring.ServiceBean;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.RuntimeBeanReference;
+import org.springframework.beans.factory.config.TypedStringValue;
+import org.springframework.beans.factory.support.ManagedMap;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.beans.factory.xml.BeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -31,6 +38,16 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
         String id = element.getAttribute("id");
         if ((id == null || id.length() == 0) && required) {
             String generatedBeanName = element.getAttribute("name");
+            if (generatedBeanName == null || generatedBeanName.length() == 0) {
+                if (false) {
+
+                }else{
+                    generatedBeanName = element.getAttribute("interface");
+                }
+            }
+            if (generatedBeanName == null || generatedBeanName.length() == 0) {
+                generatedBeanName = beanClass.getName();
+            }
             id = generatedBeanName;
             int counter = 2;
             while (parserContext.getRegistry().containsBeanDefinition(id)) {
@@ -41,11 +58,28 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
             if (parserContext.getRegistry().containsBeanDefinition(id)) {
                 throw new IllegalStateException("Duplicate spring bean id " + id);
             }
+            /**
+             * registerBeanDefinition注册Bean的定义
+             */
             parserContext.getRegistry().registerBeanDefinition(id, beanDefinition);
             beanDefinition.getPropertyValues().addPropertyValue("id", id);
         }
+        if(false){
+
+        }else if(ServiceBean.class.equals(beanClass)){
+            String className = element.getAttribute("class");
+            if (className != null && className.length() > 0) {
+                RootBeanDefinition classDefinition = new RootBeanDefinition();
+                classDefinition.setBeanClass(ReflectUtils.forName(className));
+                classDefinition.setLazyInit(false);
+//                parseProperties(element.getChildNodes(), classDefinition);
+
+            }
+        }
+
         //省略beanClass类型判断，待补充
         Set<String> props = new HashSet<String>();//属性集合
+        ManagedMap parameters = null;
         for (Method setter : beanClass.getMethods()) {
             String name = setter.getName();//获取方法名
             if (name.length() > 3 && name.startsWith("set")
@@ -93,7 +127,14 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
                                     }
                                     reference = value;
                                 }else{
-                                    reference = null;//省略
+                                    if ("ref".equals(property) && parserContext.getRegistry().containsBeanDefinition(value)) {
+                                        //根据ref的值在容器里找，所以容器的值要与之对应
+                                        BeanDefinition refBean = parserContext.getRegistry().getBeanDefinition(value);
+                                        if (!refBean.isSingleton()) {
+                                            throw new IllegalStateException("The exported service ref " + value + " must be singleton! Please set the " + value + " bean scope to singleton, eg: <bean id=\"" + value + "\" scope=\"singleton\" ...>");
+                                        }
+                                    }
+                                    reference = new RuntimeBeanReference(value);//省略
                                 }
                                 beanDefinition.getPropertyValues().addPropertyValue(beanProperty, reference);
                             }
@@ -104,7 +145,23 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
             }
         }
 
-        return null;
+        NamedNodeMap attributes = element.getAttributes();
+        int len = attributes.getLength();
+        for (int i = 0; i < len; i++) {
+            Node node = attributes.item(i);
+            String name = node.getLocalName();
+            if (!props.contains(name)) {
+                if (parameters == null) {
+                    parameters = new ManagedMap();
+                }
+                String value = node.getNodeValue();
+                parameters.put(name, new TypedStringValue(value, String.class));
+            }
+        }
+        if (parameters != null) {
+            beanDefinition.getPropertyValues().addPropertyValue("parameters", parameters);
+        }
+        return beanDefinition;
     }
 
     private static boolean isPrimitive(Class<?> cls) {
