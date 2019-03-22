@@ -1,5 +1,6 @@
 package com.examle.core.common.bytecode;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -12,4 +13,6 @@ public abstract class Wrapper {
     }
 
     abstract public String[] getMethodNames();
+
+    abstract public Object invokeMethod(Object instance, String mn, Class<?>[] types, Object[] args) throws NoSuchMethodException, InvocationTargetException;
 }

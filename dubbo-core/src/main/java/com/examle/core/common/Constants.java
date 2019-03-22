@@ -24,4 +24,6 @@ public class Constants {
 
     public static final String CONFIG_CHECK_KEY = "config.check";
 
+    public static final String PROXY_KEY = "proxy";
+
 }

@@ -44,8 +44,28 @@
         }
     }
     ```
+    - 总结
+        - 简易流程图
+        - 分析
+           - ExtensionLoader的type为需要扩展的类，objectFactory为ExtensionFactory的扩展（源码得出为AdaptiveExtensionFactory）
+3.  自定义Bean的过程
+    - xml到beanDefinition过程
+    ![beanDefinition生成过程](https://github.com/yehuali/dubboDemo/tree/master/images/xml到beanDefinition解析过程.jpg)        
+    - beanDefinition到bean的过程
+    ![bean生成过程](http://www.ibm.com/developerworks/cn/java/j-lo-spring-principle/origin_image012.gif)
+        - 参考资料：https://blog.kazaff.me/2015/01/26/dubbo%E5%A6%82%E4%BD%95%E4%B8%80%E6%AD%A5%E4%B8%80%E6%AD%A5%E6%8B%BF%E5%88%B0bean/
+
+4.  服务注册   
+    - URL格式
+    ![loadRegistries的map存放信息](https://github.com/yehuali/dubboDemo/tree/master/images/loadRegistries的map存放信息.jpg)
+    ```
+        registry://127.0.0.1:2181/org.apache.dubbo.registry.RegistryService?application=meetup-demo-provider&dubbo=2.0.2&pid=21160&registry=zookeeper&release=2.7.0&timestamp=1553236781382
+    ```
+    ![doExportUrlsFor1Protocol的map信息](https://github.com/yehuali/dubboDemo/tree/master/images/doExportUrlsFor1Protocol的map信息.jpg)
+    - 服务注册流程图
     
-3.  ServiceBean的源码分析
+
+4.  ServiceBean的源码分析
     - 参考资料：https://github.com/shuaijunlan/shuaijunlan.github.io/blob/master/images/ServiceBean.png?raw=true
     - ServiceBean类继承关系
     ![ServiceBean类继承关系](https://github.com/shuaijunlan/shuaijunlan.github.io/blob/master/images/ServiceBean.png?raw=true)
