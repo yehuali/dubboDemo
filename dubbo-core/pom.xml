@@ -41,9 +41,7 @@
             <resource>
                 <directory>META-INF</directory>
                 <includes>
-                    <include>**/*.xsd</include>
-                    <include>**/*.handlers</include>
-                    <include>**/*.schemas</include>
+                    <include>**/*</include>
                 </includes>
                 <targetPath>META-INF</targetPath>
             </resource>
