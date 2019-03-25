@@ -48,6 +48,11 @@
         - 简易流程图
         - 分析
            - ExtensionLoader的type为需要扩展的类，objectFactory为ExtensionFactory的扩展（源码得出为AdaptiveExtensionFactory）
+        - @SPI、@Activate、@Adaptive注解分析
+            - 需要扩展的类加上@SPI注解
+            - 扩展的实现类加上@Activate注解
+            - @Adaptive为标记实现一个适配器类，并且动态生成（通过代理生成）
+                - 参考资料：https://blog.csdn.net/qq924862077/article/details/77510121
 3.  自定义Bean的过程
     - xml到beanDefinition过程
     ![beanDefinition生成过程](https://github.com/yehuali/dubboDemo/tree/master/images/xml到beanDefinition解析过程.jpg)        
