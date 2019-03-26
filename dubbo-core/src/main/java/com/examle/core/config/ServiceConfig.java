@@ -36,17 +36,17 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
     /**
      * The reference of the interface implementation
      */
-    private T ref;
+    private T ref;//通过xml属性注入，根据get set方法
 
     /**
      * The interface class of the exported service
      */
-    private Class<?> interfaceClass;
+    private Class<?> interfaceClass;//根据interfaceName反射加载
 
     /**
      * The interface name of the exported service
      */
-    private String interfaceName;
+    private String interfaceName;//通过xml属性注入，根据get set方法
 
     private static final Protocol protocol = ExtensionLoader.getExtensionLoader(Protocol.class).getAdaptiveExtension();
 
@@ -146,6 +146,16 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         //启动注册中心
         startConfigCenter();
         checkDefault();
+        if(false){
+
+        }else{
+            try {
+                interfaceClass = Class.forName(interfaceName, true, Thread.currentThread()
+                        .getContextClassLoader());
+            }catch (ClassNotFoundException e){
+                throw new IllegalStateException(e.getMessage(), e);
+            }
+        }
     }
 
     private void checkDefault() {
@@ -189,4 +199,52 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         }
     }
 
+    public T getRef() {
+        return ref;
+    }
+
+    public void setRef(T ref) {
+        this.ref = ref;
+    }
+
+    public Class<?> getInterfaceClass() {
+        if (interfaceClass != null) {
+            return interfaceClass;
+        }
+//        if (ref instanceof GenericService) {
+//            return GenericService.class;
+//        }
+        try {
+            if (interfaceName != null && interfaceName.length() > 0) {
+                this.interfaceClass = Class.forName(interfaceName, true, Thread.currentThread()
+                        .getContextClassLoader());
+            }
+        } catch (ClassNotFoundException t) {
+            throw new IllegalStateException(t.getMessage(), t);
+        }
+        return interfaceClass;
+    }
+
+    public void setInterfaceClass(Class<?> interfaceClass) {
+        setInterface(interfaceClass);
+    }
+
+    public String getInterface() {
+        return interfaceName;
+    }
+
+    public void setInterface(Class<?> interfaceClass) {
+        if (interfaceClass != null && !interfaceClass.isInterface()) {
+            throw new IllegalStateException("The interface class " + interfaceClass + " is not a interface!");
+        }
+        this.interfaceClass = interfaceClass;
+        setInterface(interfaceClass == null ? null : interfaceClass.getName());
+    }
+
+    public void setInterface(String interfaceName) {
+        this.interfaceName = interfaceName;
+        if (id == null || id.length() == 0) {
+            id = interfaceName;
+        }
+    }
 }

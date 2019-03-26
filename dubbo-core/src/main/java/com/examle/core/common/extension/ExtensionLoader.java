@@ -178,7 +178,11 @@ public class ExtensionLoader<T> {
                 }
                 //参数里包含URL
                 if (urlTypeIndex != -1) {
-                    //待完成
+                    String s = String.format("\nif (arg%d == null) throw new IllegalArgumentException(\"url == null\");",
+                            urlTypeIndex);
+                    code.append(s);
+                    s = String.format("\n%s url = arg%d;", URL.class.getName(), urlTypeIndex);
+                    code.append(s);
                 }else{
                     /**
                      * 参数类中方法是否含有get方法返回URL的
@@ -245,7 +249,11 @@ public class ExtensionLoader<T> {
                     if (i == value.length - 1) {
                         if (null != defaultExtName) {
                             if (!"protocol".equals(value[i])) {
+                                if (hasInvocation) {
 
+                                }else{
+                                    getNameCode = String.format("url.getParameter(\"%s\", \"%s\")", value[i], defaultExtName);
+                                }
                             }else{
                                 getNameCode = String.format("( url.getProtocol() == null ? \"%s\" : url.getProtocol() )", defaultExtName);
                             }

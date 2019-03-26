@@ -136,6 +136,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
                                     }
                                     reference = new RuntimeBeanReference(value);//省略
                                 }
+                                //为相关属性添加依赖
                                 beanDefinition.getPropertyValues().addPropertyValue(beanProperty, reference);
                             }
                         }
@@ -145,6 +146,7 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
             }
         }
 
+        // 排除掉上面解析过的，剩余的属性添加到parameters属性中
         NamedNodeMap attributes = element.getAttributes();
         int len = attributes.getLength();
         for (int i = 0; i < len; i++) {

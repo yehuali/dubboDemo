@@ -46,8 +46,10 @@
     ```
     - 总结
         - 简易流程图
+        ![spi简易图](https://github.com/yehuali/dubboDemo/tree/master/images/SPI简易图.png)
         - 分析
            - ExtensionLoader的type为需要扩展的类，objectFactory为ExtensionFactory的扩展（源码得出为AdaptiveExtensionFactory）
+           - 顺序： 1.通过配置文件加载adaptive类（如果没有采用动态编程的方式） 2.通过adpative类去代理扩展类（从配置文件加载）
         - @SPI、@Activate、@Adaptive注解分析
             - 需要扩展的类加上@SPI注解
             - 扩展的实现类加上@Activate注解
@@ -68,7 +70,7 @@
     ```
     ![doExportUrlsFor1Protocol的map信息](https://github.com/yehuali/dubboDemo/tree/master/images/doExportUrlsFor1Protocol的map信息.jpg)
     - 服务注册流程图
-    
+    ![服务注册流程图](https://github.com/yehuali/dubboDemo/tree/master/images/服务注册流程图.png)
 
 4.  ServiceBean的源码分析
     - 参考资料：https://github.com/shuaijunlan/shuaijunlan.github.io/blob/master/images/ServiceBean.png?raw=true

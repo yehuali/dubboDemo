@@ -33,16 +33,6 @@ public class ServiceBean<T> extends ServiceConfig<T> implements InitializingBean
 
     private transient boolean supportedApplicationListener;
 
-    //接口实现
-    private T ref;
-
-    public T getRef() {
-        return ref;
-    }
-
-    public void setRef(T ref) {
-        this.ref = ref;
-    }
 
     //传入bean所在容器的引用
     @Override
