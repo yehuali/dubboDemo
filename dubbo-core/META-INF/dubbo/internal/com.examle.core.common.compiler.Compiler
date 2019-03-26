@@ -1,0 +1,2 @@
+adaptive=com.examle.core.common.compiler.support.AdaptiveCompiler
+javassist=com.examle.core.common.compiler.support.JavassistCompiler

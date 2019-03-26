@@ -1,5 +1,6 @@
 package com.examle.core.common.extension;
 
+import com.examle.core.common.URL;
 import com.examle.core.common.utils.ClassHelper;
 import com.examle.core.common.utils.ConcurrentHashSet;
 import com.examle.core.common.utils.Holder;
@@ -10,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
-import java.net.URL;
+import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -112,8 +113,202 @@ public class ExtensionLoader<T> {
         if (cachedAdaptiveClass != null) {
             return cachedAdaptiveClass;
         }
-//        return cachedAdaptiveClass = createAdaptiveExtensionClass();
-        return null;
+        /**
+         * 在Protocol中没有adaptiveClass
+         */
+        return cachedAdaptiveClass = createAdaptiveExtensionClass();
+    }
+
+    private Class<?> createAdaptiveExtensionClass() {
+        String code = createAdaptiveExtensionClassCode();
+        ClassLoader classLoader = findClassLoader();
+        com.examle.core.common.compiler.Compiler compiler = ExtensionLoader.getExtensionLoader(com.examle.core.common.compiler.Compiler.class).getAdaptiveExtension();
+        return compiler.compile(code, classLoader);
+    }
+
+    public T getDefaultExtension() {
+        getExtensionClasses();
+        if (null == cachedDefaultName || cachedDefaultName.length() == 0
+                || "true".equals(cachedDefaultName)) {
+            return null;
+        }
+        return getExtension(cachedDefaultName);
+    }
+
+    private String createAdaptiveExtensionClassCode() {
+        StringBuilder codeBuilder = new StringBuilder();
+        Method[] methods = type.getMethods();
+        boolean hasAdaptiveAnnotation = false;
+        //寻找接口（需要扩展）的方法里是否有Adaptive注解的
+        for (Method m : methods) {
+            if (m.isAnnotationPresent(Adaptive.class)) {
+                hasAdaptiveAnnotation = true;
+                break;
+            }
+        }
+        if (!hasAdaptiveAnnotation) {
+            throw new IllegalStateException("No adaptive method on extension " + type.getName() + ", refuse to create the adaptive class!");
+        }
+        codeBuilder.append("package ").append(type.getPackage().getName()).append(";");
+        codeBuilder.append("\nimport ").append(ExtensionLoader.class.getName()).append(";");
+        codeBuilder.append("\npublic class ").append(type.getSimpleName()).append("$Adaptive").append(" implements ").append(type.getCanonicalName()).append(" {");
+
+        for (Method method : methods) {
+            Class<?> rt = method.getReturnType();
+            Class<?>[] pts = method.getParameterTypes();
+            Class<?>[] ets = method.getExceptionTypes();
+
+            Adaptive adaptiveAnnotation = method.getAnnotation(Adaptive.class);
+            StringBuilder code = new StringBuilder(512);
+            //没有Adaptive方法统统抛出异常不支持
+            if (adaptiveAnnotation == null) {
+                code.append("throw new UnsupportedOperationException(\"method ")
+                        .append(method.toString()).append(" of interface ")
+                        .append(type.getName()).append(" is not adaptive method!\");");
+            }else {
+                int urlTypeIndex = -1;
+                //遍历方法的参数，例如export里的Invoker
+                for (int i = 0; i < pts.length; ++i) {
+                    if (pts[i].equals(URL.class)) {
+                        if (pts[i].equals(URL.class)) {
+                            urlTypeIndex = i;
+                            break;
+                        }
+                    }
+                }
+                //参数里包含URL
+                if (urlTypeIndex != -1) {
+                    //待完成
+                }else{
+                    /**
+                     * 参数类中方法是否含有get方法返回URL的
+                     *  -- 如果没有抛出异常
+                     */
+                    String attribMethod = null;
+                    /**
+                     * 遍历参数
+                     */
+                    LBL_PTS:
+                    for (int i = 0; i < pts.length; ++i) {
+                        Method[] ms = pts[i].getMethods();
+                        //遍历参数类中的方法
+                        for (Method m : ms) {
+                            String name = m.getName();
+                            //参数类中含有get方法返回URL
+                            if ((name.startsWith("get") || name.length() > 3)
+                                    && Modifier.isPublic(m.getModifiers())
+                                    && !Modifier.isStatic(m.getModifiers())
+                                    && m.getParameterTypes().length == 0
+                                    && m.getReturnType() == URL.class) {
+                                urlTypeIndex = i;
+                                attribMethod = name;
+                                break LBL_PTS;
+                            }
+                        }
+                    }
+
+                    if (attribMethod == null) {
+                        throw new IllegalStateException("fail to create adaptive class for interface " + type.getName()
+                                + ": not found url parameter or url attribute in parameters of method " + method.getName());
+                    }
+
+                    String s = String.format("\nif (arg%d == null) throw new IllegalArgumentException(\"%s argument == null\");",
+                            urlTypeIndex, pts[urlTypeIndex].getName());
+                    code.append(s);
+
+                    s = String.format("\nif (arg%d.%s() == null) throw new IllegalArgumentException(\"%s argument %s() == null\");",
+                            urlTypeIndex, attribMethod, pts[urlTypeIndex].getName(), attribMethod);
+                    code.append(s);
+
+                    s = String.format("%s url = arg%d.%s();", URL.class.getName(), urlTypeIndex, attribMethod);
+                    code.append(s);
+                }
+
+                String[] value = adaptiveAnnotation.value();
+                //值未设置，请使用从类名生成的值作为键
+                if (value.length == 0) {
+                    String splitName = StringUtils.camelToSplitName(type.getSimpleName(), ".");//为Protocol
+                    value = new String[]{splitName};
+                }
+
+                boolean hasInvocation = false;
+                for (int i = 0; i < pts.length; ++i) {
+                    if (("org.apache.dubbo.rpc.Invocation").equals(pts[i].getName())) {
+                        //待写
+                        break;
+                    }
+                }
+
+                String defaultExtName = cachedDefaultName; //默认为dubbo
+                String getNameCode = null;
+                for (int i = value.length - 1; i >= 0; --i) {
+                    if (i == value.length - 1) {
+                        if (null != defaultExtName) {
+                            if (!"protocol".equals(value[i])) {
+
+                            }else{
+                                getNameCode = String.format("( url.getProtocol() == null ? \"%s\" : url.getProtocol() )", defaultExtName);
+                            }
+                        }
+                    }
+                }
+                code.append("\nString extName = ").append(getNameCode).append(";");
+                //检查extName == null?
+                String s = String.format("\nif(extName == null) " +
+                                "throw new IllegalStateException(\"Fail to get extension(%s) name from url(\" + url.toString() + \") use keys(%s)\");",
+                        type.getName(), Arrays.toString(value));
+                code.append(s);
+
+                //根据扩展名获取扩展类
+                s = String.format("\n%s extension = (%<s)%s.getExtensionLoader(%s.class).getExtension(extName);",
+                        type.getName(), ExtensionLoader.class.getSimpleName(), type.getName());
+                code.append(s);
+
+                //返回值
+                if (!rt.equals(void.class)) {
+                    code.append("\nreturn ");
+                }
+
+                s = String.format("extension.%s(", method.getName());
+                code.append(s);
+                for (int i = 0; i < pts.length; i++) {
+                    if (i != 0) {
+                        code.append(", ");
+                    }
+                    code.append("arg").append(i);
+                }
+                code.append(");");
+            }
+
+            codeBuilder.append("\npublic ").append(rt.getCanonicalName()).append(" ").append(method.getName()).append("(");
+            for (int i = 0; i < pts.length; i++) {
+                if (i > 0) {
+                    codeBuilder.append(", ");
+                }
+                codeBuilder.append(pts[i].getCanonicalName());
+                codeBuilder.append(" ");
+                codeBuilder.append("arg").append(i);
+            }
+            codeBuilder.append(")");
+            if (ets.length > 0) {
+                codeBuilder.append(" throws ");
+                for (int i = 0; i < ets.length; i++) {
+                    if (i > 0) {
+                        codeBuilder.append(", ");
+                    }
+                    codeBuilder.append(ets[i].getCanonicalName());
+                }
+            }
+            codeBuilder.append(" {");
+            codeBuilder.append(code.toString());
+            codeBuilder.append("\n}");
+        }
+
+        codeBuilder.append("\n}");
+        if (logger.isDebugEnabled()) {
+            logger.debug(codeBuilder.toString());
+        }
+        return codeBuilder.toString();
     }
 
     /**
@@ -164,7 +359,7 @@ public class ExtensionLoader<T> {
     private void loadDirectory(Map<String, Class<?>> extensionClasses, String dir, String type) {
         String fileName = dir + type;
         try {
-            Enumeration<URL> urls;
+            Enumeration<java.net.URL> urls;
             ClassLoader classLoader = findClassLoader();
             if (classLoader != null) {
                 urls = classLoader.getResources(fileName);
@@ -173,7 +368,7 @@ public class ExtensionLoader<T> {
             }
             if (urls != null) {
                 while (urls.hasMoreElements()) {
-                    URL resourceURL = urls.nextElement();
+                    java.net.URL resourceURL = urls.nextElement();
                     loadResource(extensionClasses, classLoader, resourceURL);
                 }
             }
@@ -183,7 +378,7 @@ public class ExtensionLoader<T> {
         }
     }
 
-    private void loadResource(Map<String, Class<?>> extensionClasses, ClassLoader classLoader, URL resourceURL) {
+    private void loadResource(Map<String, Class<?>> extensionClasses, ClassLoader classLoader, java.net.URL resourceURL) {
         try{
             BufferedReader reader = new BufferedReader(new InputStreamReader(resourceURL.openStream(), "utf-8"));
             try{

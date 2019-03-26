@@ -33,6 +33,11 @@ public abstract class AbstractProxyInvoker<T> implements Invoker<T> {
     }
 
     @Override
+    public URL getUrl() {
+        return url;
+    }
+
+    @Override
     public Result invoke(Invocation invocation) throws RpcException {
         try{
             Object obj =  doInvoke(null,null,null,null);
