@@ -2,10 +2,14 @@ package com.examle.core.config;
 
 import com.examle.core.config.context.ConfigManager;
 import com.examle.core.config.support.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public abstract class AbstractServiceConfig extends AbstractInterfaceConfig {
+
+    protected static final Logger logger = LoggerFactory.getLogger(AbstractConfig.class);
     /**
      * Whether to export the service
      */

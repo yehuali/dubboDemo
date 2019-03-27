@@ -133,9 +133,19 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         Integer port = 20880;
         URL url = new URL(name, host, port, path, map);
 
-        String scope = null;
-        //如果配置不是远程的，导出到本地(只有在配置是远程的时候才导出到远程)
-        exportLocal(url);
+        String scope = url.getParameter(Constants.SCOPE_KEY);
+        // don't export when none is configured
+        if (!Constants.SCOPE_NONE.equalsIgnoreCase(scope)) {
+            if (!Constants.SCOPE_REMOTE.equalsIgnoreCase(scope)) {
+                exportLocal(url);
+            }
+            if (!Constants.SCOPE_LOCAL.equalsIgnoreCase(scope)) {
+                if (logger.isInfoEnabled()) {
+                    logger.info("Export dubbo service " + interfaceClass.getName() + " to url " + url);
+                }
+            }
+        }
+
     }
 
     @Parameter(excluded = true)
