@@ -260,7 +260,20 @@ public class URL implements Serializable {
         Map<String, String> parameters = null;
         int i = url.indexOf("?"); // seperator between body and parameters
         if (i >= 0) {
-
+            String[] parts = url.substring(i + 1).split("\\&");
+            parameters = new HashMap<String, String>();
+            for (String part : parts) {
+                part = part.trim();
+                if (part.length() > 0) {
+                    int j = part.indexOf('=');
+                    if (j >= 0) {
+                        parameters.put(part.substring(0, j), part.substring(j + 1));
+                    } else {
+                        parameters.put(part, part);
+                    }
+                }
+            }
+            url = url.substring(0, i);
         }
         i = url.indexOf("://");
         if (i >= 0) {
@@ -275,6 +288,10 @@ public class URL implements Serializable {
         }
 
         i = url.indexOf("/");
+        if (i >= 0) {
+            path = url.substring(i + 1);
+            url = url.substring(0, i);
+        }
 
         i = url.lastIndexOf("@");
 
@@ -319,6 +336,20 @@ public class URL implements Serializable {
     }
 
     public URL setPort(int port) {
+        return new URL(protocol, username, password, host, port, path, getParameters());
+    }
+
+    public String toFullString() {
+        if (full != null) {
+            return full;
+        }
+        return full = buildString(true, true);
+    }
+    private String buildString(boolean appendUser, boolean appendParameter, String... parameters) {
+        return buildString(appendUser, appendParameter, false, false, parameters);
+    }
+
+    public URL setHost(String host) {
         return new URL(protocol, username, password, host, port, path, getParameters());
     }
 }

@@ -1,5 +1,7 @@
 package com.examle.core.common.utils;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -129,6 +131,88 @@ public class ReflectUtils {
             NAME_CLASS_CACHE.put(name, clazz);
         }
         return clazz;
+    }
+
+    public static String getName(Class<?> c) {
+        if (c.isArray()) {
+            StringBuilder sb = new StringBuilder();
+            do {
+                sb.append("[]");
+                c = c.getComponentType();
+            }
+            while (c.isArray());
+
+            return c.getName() + sb.toString();
+        }
+        return c.getName();
+    }
+
+    public static String getDesc(final Method m) {
+        StringBuilder ret = new StringBuilder(m.getName()).append('(');
+        Class<?>[] parameterTypes = m.getParameterTypes();
+        for (int i = 0; i < parameterTypes.length; i++) {
+            ret.append(getDesc(parameterTypes[i]));
+        }
+        ret.append(')').append(getDesc(m.getReturnType()));
+        return ret.toString();
+    }
+
+    public static String getDesc(Class<?> c) {
+        StringBuilder ret = new StringBuilder();
+
+        while (c.isArray()) {
+            ret.append('[');
+            c = c.getComponentType();
+        }
+
+        if (c.isPrimitive()) {
+            String t = c.getName();
+            if ("void".equals(t)) {
+                ret.append(JVM_VOID);
+            } else if ("boolean".equals(t)) {
+                ret.append(JVM_BOOLEAN);
+            } else if ("byte".equals(t)) {
+                ret.append(JVM_BYTE);
+            } else if ("char".equals(t)) {
+                ret.append(JVM_CHAR);
+            } else if ("double".equals(t)) {
+                ret.append(JVM_DOUBLE);
+            } else if ("float".equals(t)) {
+                ret.append(JVM_FLOAT);
+            } else if ("int".equals(t)) {
+                ret.append(JVM_INT);
+            } else if ("long".equals(t)) {
+                ret.append(JVM_LONG);
+            } else if ("short".equals(t)) {
+                ret.append(JVM_SHORT);
+            }
+        } else {
+            ret.append('L');
+            ret.append(c.getName().replace('.', '/'));
+            ret.append(';');
+        }
+        return ret.toString();
+    }
+
+    public static String getDesc(final Constructor<?> c) {
+        StringBuilder ret = new StringBuilder("(");
+        Class<?>[] parameterTypes = c.getParameterTypes();
+        for (int i = 0; i < parameterTypes.length; i++) {
+            ret.append(getDesc(parameterTypes[i]));
+        }
+        ret.append(')').append('V');
+        return ret.toString();
+    }
+
+    public static String getDescWithoutMethodName(Method m) {
+        StringBuilder ret = new StringBuilder();
+        ret.append('(');
+        Class<?>[] parameterTypes = m.getParameterTypes();
+        for (int i = 0; i < parameterTypes.length; i++) {
+            ret.append(getDesc(parameterTypes[i]));
+        }
+        ret.append(')').append(getDesc(m.getReturnType()));
+        return ret.toString();
     }
 
 }

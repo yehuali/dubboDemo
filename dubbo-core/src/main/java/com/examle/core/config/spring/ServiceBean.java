@@ -142,6 +142,30 @@ public class ServiceBean<T> extends ServiceConfig<T> implements InitializingBean
                 }
             }
 
+            if((getProtocols() == null || getProtocols().isEmpty())
+                && (getProvider() == null || getProvider().getProtocols() == null || getProvider().getProtocols().isEmpty())){
+                Map<String, ProtocolConfig> protocolConfigMap = applicationContext == null ? null :
+                        BeanFactoryUtils.beansOfTypeIncludingAncestors(applicationContext, ProtocolConfig.class, false, false);
+                if (protocolConfigMap != null && protocolConfigMap.size() > 0) {
+                    List<ProtocolConfig> protocolConfigs = new ArrayList<ProtocolConfig>();
+                    if (StringUtils.isNotEmpty(getProtocolIds())) {
+
+                    }
+
+                    if (protocolConfigs.isEmpty()) {
+                        for (ProtocolConfig config : protocolConfigMap.values()) {
+                            if (StringUtils.isEmpty(protocolIds)) {
+                                protocolConfigs.add(config);
+                            }
+                        }
+                    }
+
+                    if (!protocolConfigs.isEmpty()) {
+                        super.setProtocols(protocolConfigs);
+                    }
+                }
+            }
+
         }
     }
 

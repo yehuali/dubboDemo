@@ -49,4 +49,8 @@ public class Constants {
 
     public static final String SUBSCRIBE_KEY = "subscribe";
 
+    public static final String SIDE_KEY = "side";
+
+    public static final String PROVIDER_SIDE = "provider";
+
 }

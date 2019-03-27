@@ -20,6 +20,7 @@ public class ConfigManager {
 
     private static final ConfigManager configManager = new ConfigManager();
 
+    private Map<String, ProtocolConfig> protocols = new ConcurrentHashMap<>();
     private Map<String, RegistryConfig> registries = new ConcurrentHashMap<>();
     private Map<String, ProviderConfig> providers = new ConcurrentHashMap<>();
 
@@ -104,4 +105,30 @@ public class ConfigManager {
         }
     }
 
+    public void addProtocols(List<ProtocolConfig> protocolConfigs) {
+        if (protocolConfigs != null) {
+            protocolConfigs.forEach(this::addProtocol);
+        }
+    }
+
+    public void addProtocol(ProtocolConfig protocolConfig) {
+        if (protocolConfig == null) {
+            return;
+        }
+
+        String key = StringUtils.isNotEmpty(protocolConfig.getId())
+                ? protocolConfig.getId()
+                : (protocolConfig.isDefault() == null || protocolConfig.isDefault()) ? DEFAULT_KEY : null;
+
+        if (StringUtils.isEmpty(key)) {
+            throw new IllegalStateException("A ProtocolConfig should either has an id or it's the default one, " + protocolConfig);
+        }
+
+        if (protocols.containsKey(key) && !protocolConfig.equals(protocols.get(key))) {
+            logger.warn("Duplicate ProtocolConfig found, there already has one default ProtocolConfig or more than two ProtocolConfigs have the same id, " +
+                    "you can try to give each ProtocolConfig a different id. " + protocolConfig);
+        } else {
+            protocols.put(key, protocolConfig);
+        }
+    }
 }

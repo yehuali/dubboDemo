@@ -48,5 +48,10 @@ public abstract class AbstractProxyInvoker<T> implements Invoker<T> {
 
     }
 
+    @Override
+    public Class<T> getInterface() {
+        return type;
+    }
+
     protected abstract Object doInvoke(T proxy, String methodName, Class<?>[] parameterTypes, Object[] arguments) throws Throwable;
 }

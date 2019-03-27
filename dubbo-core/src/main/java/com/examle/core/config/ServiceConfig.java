@@ -15,6 +15,8 @@ import com.examle.core.rpc.model.ProviderModel;
 
 import java.util.*;
 
+import static com.examle.core.common.utils.NetUtils.LOCALHOST;
+
 public class ServiceConfig<T> extends AbstractServiceConfig {
 
     /**
@@ -110,6 +112,13 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
             name = Constants.DUBBO;
         }
         Map<String, String> map = new HashMap<String, String>();
+        map.put(Constants.SIDE_KEY, Constants.PROVIDER_SIDE);
+        appendRuntimeParameters(map);
+        appendParameters(map, application);
+        appendParameters(map, module);
+        appendParameters(map, provider, Constants.DEFAULT_KEY);
+        appendParameters(map, protocolConfig);
+        appendParameters(map, this);
         if(false){
 
         }else{
@@ -120,7 +129,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
             }
         }
 
-        String host = "192.168.1.100";
+        String host = "192.168.2.206";
         Integer port = 20880;
         URL url = new URL(name, host, port, path, map);
 
@@ -193,7 +202,10 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
             /**
              * 将协议改为injvm，IP:127.0.0.1,端口为0
              */
-            URL local = url;
+            URL local = URL.valueOf(url.toFullString())
+                    .setProtocol(Constants.LOCAL_PROTOCOL)
+                    .setHost(LOCALHOST)
+                    .setPort(0);
             Exporter<?> exporter = protocol.export(
                     proxyFactory.getInvoker(ref, (Class) interfaceClass, local));
         }

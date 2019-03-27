@@ -1,1 +1,1 @@
-dubbo=org.apache.dubbo.rpc.protocol.dubbo.DubboProtocol
+injvm=com.examle.core.rpc.protocol.injvm.InjvmProtocol

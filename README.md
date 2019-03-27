@@ -63,8 +63,10 @@
     ![bean生成过程](http://www.ibm.com/developerworks/cn/java/j-lo-spring-principle/origin_image012.gif)
         - 参考资料：https://blog.kazaff.me/2015/01/26/dubbo%E5%A6%82%E4%BD%95%E4%B8%80%E6%AD%A5%E4%B8%80%E6%AD%A5%E6%8B%BF%E5%88%B0bean/
     - serviceBean的afterPropertiesSet方法对相关组件进行加载
+    
+4.  动态编程
 
-4.  服务注册   
+5.  服务注册   
     - URL格式
     ![loadRegistries的map存放信息](https://github.com/yehuali/dubboDemo/tree/master/images/loadRegistries的map存放信息.jpg)
     ```
@@ -76,7 +78,7 @@
     - 注册中心
     
 
-4.  ServiceBean的源码分析
+6.  ServiceBean的源码分析
     - 参考资料：https://github.com/shuaijunlan/shuaijunlan.github.io/blob/master/images/ServiceBean.png?raw=true
     - ServiceBean类继承关系
     ![ServiceBean类继承关系](https://github.com/shuaijunlan/shuaijunlan.github.io/blob/master/images/ServiceBean.png?raw=true)

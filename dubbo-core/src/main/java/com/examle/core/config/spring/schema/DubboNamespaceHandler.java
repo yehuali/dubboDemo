@@ -1,6 +1,7 @@
 package com.examle.core.config.spring.schema;
 
 import com.examle.core.config.ApplicationConfig;
+import com.examle.core.config.ProtocolConfig;
 import com.examle.core.config.RegistryConfig;
 import com.examle.core.config.spring.ConfigCenterBean;
 import com.examle.core.config.spring.ServiceBean;
@@ -18,6 +19,7 @@ public class DubboNamespaceHandler extends NamespaceHandlerSupport {
         registerBeanDefinitionParser("application", new DubboBeanDefinitionParser(ApplicationConfig.class, true));
         registerBeanDefinitionParser("registry", new DubboBeanDefinitionParser(RegistryConfig.class, true));
         registerBeanDefinitionParser("config-center", new DubboBeanDefinitionParser(ConfigCenterBean.class, true));
+        registerBeanDefinitionParser("protocol", new DubboBeanDefinitionParser(ProtocolConfig.class, true));
         registerBeanDefinitionParser("service", new DubboBeanDefinitionParser(ServiceBean.class, true));
     }
 }
