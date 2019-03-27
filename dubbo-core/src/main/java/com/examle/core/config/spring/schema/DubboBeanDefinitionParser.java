@@ -2,6 +2,7 @@ package com.examle.core.config.spring.schema;
 
 import com.examle.core.common.utils.ReflectUtils;
 import com.examle.core.common.utils.StringUtils;
+import com.examle.core.config.RegistryConfig;
 import com.examle.core.config.spring.ServiceBean;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
@@ -30,8 +31,8 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
         this.required = required;
     }
 
-    @Override
-    public BeanDefinition parse(Element element, ParserContext parserContext) {
+
+    public BeanDefinition parse(Element element, ParserContext parserContext ,Class<?> beanClass, boolean required) {
         RootBeanDefinition beanDefinition = new RootBeanDefinition();
         beanDefinition.setBeanClass(beanClass);
         beanDefinition.setLazyInit(false);
@@ -111,7 +112,9 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
                     if (value != null) {
                         value = value.trim();
                         if (value.length() > 0) {
-                            if(false){
+                            if("registry".equals(property) && RegistryConfig.NO_AVAILABLE.equalsIgnoreCase(value)){
+                                RegistryConfig registryConfig = new RegistryConfig();
+                            }else if(false){
 
                             }else{
                                 Object reference;
@@ -164,6 +167,12 @@ public class DubboBeanDefinitionParser implements BeanDefinitionParser {
             beanDefinition.getPropertyValues().addPropertyValue("parameters", parameters);
         }
         return beanDefinition;
+    }
+
+
+    @Override
+    public BeanDefinition parse(Element element, ParserContext parserContext) {
+        return parse(element, parserContext, beanClass, required);
     }
 
     private static boolean isPrimitive(Class<?> cls) {

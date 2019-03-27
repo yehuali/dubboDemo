@@ -5,10 +5,12 @@ import org.springframework.util.CollectionUtils;
 
 import java.io.PrintWriter;
 import java.util.Collection;
+import java.util.regex.Pattern;
 
 public class StringUtils {
 
     public static final String EMPTY = "";
+    private static final Pattern INT_PATTERN = Pattern.compile("^\\d+$");
 
     public static boolean isEmpty(String str) {
         return str == null || str.isEmpty();
@@ -75,5 +77,13 @@ public class StringUtils {
         } finally {
             p.close();
         }
+    }
+
+    public static boolean isInteger(String str) {
+        return isNotEmpty(str) && INT_PATTERN.matcher(str).matches();
+    }
+
+    public static int parseInteger(String str) {
+        return isInteger(str) ? Integer.parseInt(str) : 0;
     }
 }

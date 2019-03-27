@@ -57,10 +57,12 @@
                 - 参考资料：https://blog.csdn.net/qq924862077/article/details/77510121
 3.  自定义Bean的过程
     - xml到beanDefinition过程
-    ![beanDefinition生成过程](https://github.com/yehuali/dubboDemo/tree/master/images/xml到beanDefinition解析过程.jpg)        
+    ![beanDefinition生成过程](https://github.com/yehuali/dubboDemo/tree/master/images/xml到beanDefinition解析过程.jpg)  
+        - 通过id（>name>interface属性>类名）在容器里注册beanDefinition      
     - beanDefinition到bean的过程
     ![bean生成过程](http://www.ibm.com/developerworks/cn/java/j-lo-spring-principle/origin_image012.gif)
         - 参考资料：https://blog.kazaff.me/2015/01/26/dubbo%E5%A6%82%E4%BD%95%E4%B8%80%E6%AD%A5%E4%B8%80%E6%AD%A5%E6%8B%BF%E5%88%B0bean/
+    - serviceBean的afterPropertiesSet方法对相关组件进行加载
 
 4.  服务注册   
     - URL格式
@@ -71,6 +73,8 @@
     ![doExportUrlsFor1Protocol的map信息](https://github.com/yehuali/dubboDemo/tree/master/images/doExportUrlsFor1Protocol的map信息.jpg)
     - 服务注册流程图
     ![服务注册流程图](https://github.com/yehuali/dubboDemo/tree/master/images/服务注册流程图.png)
+    - 注册中心
+    
 
 4.  ServiceBean的源码分析
     - 参考资料：https://github.com/shuaijunlan/shuaijunlan.github.io/blob/master/images/ServiceBean.png?raw=true

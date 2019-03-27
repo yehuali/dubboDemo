@@ -11,6 +11,8 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static com.examle.core.config.spring.util.BeanFactoryUtils.addApplicationListener;
@@ -101,6 +103,35 @@ public class ServiceBean<T> extends ServiceConfig<T> implements InitializingBean
                 }
 
             }
+            //注册中心
+            if((getRegistries() == null || getRegistries().isEmpty())
+                && (getProvider() == null || getProvider().getRegistries() == null || getProvider().getRegistries().isEmpty())
+                &&   (getApplication() == null || getApplication().getRegistries() == null || getApplication().getRegistries().isEmpty())){
+                /**
+                 * 返回给定类型或子类型的所有bean，也获取其中定义的bean
+                 */
+                Map<String, RegistryConfig> registryConfigMap = applicationContext == null ? null :
+                        BeanFactoryUtils.beansOfTypeIncludingAncestors(applicationContext, RegistryConfig.class, false, false);
+                if (registryConfigMap != null && registryConfigMap.size() > 0) {
+                    List<RegistryConfig> registryConfigs = new ArrayList<>();
+                    if (StringUtils.isNotEmpty(registryIds)) {
+
+                    }
+
+                    if (registryConfigs.isEmpty()) {
+                        for (RegistryConfig config : registryConfigMap.values()) {
+                            if (StringUtils.isEmpty(registryIds)) {
+                                registryConfigs.add(config);
+                            }
+                        }
+                    }
+                    if (!registryConfigs.isEmpty()) {
+                        super.setRegistries(registryConfigs);
+                    }
+
+                }
+            }
+
 
             //配置中心
             if (getConfigCenter() == null) {

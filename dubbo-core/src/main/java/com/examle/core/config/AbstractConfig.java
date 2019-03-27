@@ -1,10 +1,14 @@
 package com.examle.core.config;
 
 import com.examle.core.common.Constants;
+import com.examle.core.common.URL;
+import com.examle.core.common.utils.ClassHelper;
 import com.examle.core.common.utils.StringUtils;
 import com.examle.core.config.support.Parameter;
 
 import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.util.Map;
 
 public abstract class AbstractConfig implements Serializable {
 
@@ -45,5 +49,46 @@ public abstract class AbstractConfig implements Serializable {
 
     public void refresh() {
         CompositeConfiguration compositeConfiguration = Environment.getInstance().getConfiguration(getPrefix(), getId());
+    }
+
+    protected static void appendParameters(Map<String, String> parameters, Object config) {
+        appendParameters(parameters, config, null);
+    }
+
+    protected static void appendParameters(Map<String, String> parameters, Object config, String prefix) {
+        if (config == null) {
+            return;
+        }
+        Method[] methods = config.getClass().getMethods();
+        for (Method method : methods) {
+            try {
+                String name = method.getName();
+                if (ClassHelper.isGetter(method)) {
+                    Parameter parameter = method.getAnnotation(Parameter.class);
+                    if (method.getReturnType() == Object.class || parameter != null && parameter.excluded()) {
+                        continue;
+                    }
+                    String key;
+                    if (parameter != null && parameter.key().length() > 0) {
+                        key = parameter.key();
+                    } else {
+                        key = calculatePropertyFromGetter(name);
+                    }
+                    Object value = method.invoke(config);
+                    String str = String.valueOf(value).trim();
+                    if (value != null && str.length() > 0) {
+                        if (parameter != null && parameter.escaped()) {
+                        }
+                    }
+                }
+            }catch (Exception e) {
+                throw new IllegalStateException(e.getMessage(), e);
+            }
+        }
+    }
+
+    private static String calculatePropertyFromGetter(String name) {
+        int i = name.startsWith("get") ? 3 : 2;
+        return StringUtils.camelToSplitName(name.substring(i, i + 1).toLowerCase() + name.substring(i + 1), ".");
     }
 }

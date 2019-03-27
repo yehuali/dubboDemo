@@ -76,9 +76,6 @@ public class URL implements Serializable {
         this(protocol, null, null, host, port, path, parameters);
     }
 
-    public String getProtocol() {
-        return protocol;
-    }
 
     public URL addParameter(String key, String value) {
         if (key == null || key.length() == 0
@@ -247,6 +244,81 @@ public class URL implements Serializable {
     }
 
     public URL setPath(String path) {
+        return new URL(protocol, username, password, host, port, path, getParameters());
+    }
+
+    public static URL valueOf(String url) {
+        if (url == null || (url = url.trim()).length() == 0) {
+            throw new IllegalArgumentException("url == null");
+        }
+        String protocol = null;
+        String username = null;
+        String password = null;
+        String host = null;
+        int port = 0;
+        String path = null;
+        Map<String, String> parameters = null;
+        int i = url.indexOf("?"); // seperator between body and parameters
+        if (i >= 0) {
+
+        }
+        i = url.indexOf("://");
+        if (i >= 0) {
+            if (i == 0) {
+                throw new IllegalStateException("url missing protocol: \"" + url + "\"");
+            }
+            protocol = url.substring(0, i);
+            url = url.substring(i + 3);
+        }else{
+            protocol = "";
+            url = "";
+        }
+
+        i = url.indexOf("/");
+
+        i = url.lastIndexOf("@");
+
+        i = url.lastIndexOf(":");
+        if (i >= 0 && i < url.length() - 1) {
+            port = Integer.parseInt(url.substring(i + 1));
+            url = url.substring(0, i);
+        }
+
+        if (url.length() > 0) {
+            host = url;
+        }
+
+        return new URL(protocol, username, password, host, port, path, parameters);
+    }
+
+    public String getProtocol() {
+        return protocol;
+    }
+
+    public URL setProtocol(String protocol) {
+        return new URL(protocol, username, password, host, port, path, getParameters());
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public URL setUsername(String username) {
+        return new URL(protocol, username, password, host, port, path, getParameters());
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public URL setPassword(String password) {
+        return new URL(protocol, username, password, host, port, path, getParameters());
+    }
+    public int getPort() {
+        return port;
+    }
+
+    public URL setPort(int port) {
         return new URL(protocol, username, password, host, port, path, getParameters());
     }
 }

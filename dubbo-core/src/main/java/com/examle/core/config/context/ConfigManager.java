@@ -1,13 +1,11 @@
 package com.examle.core.config.context;
 
 import com.examle.core.common.utils.StringUtils;
-import com.examle.core.config.AbstractConfig;
-import com.examle.core.config.ApplicationConfig;
-import com.examle.core.config.ConfigCenterConfig;
-import com.examle.core.config.ProviderConfig;
+import com.examle.core.config.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,7 +20,9 @@ public class ConfigManager {
 
     private static final ConfigManager configManager = new ConfigManager();
 
+    private Map<String, RegistryConfig> registries = new ConcurrentHashMap<>();
     private Map<String, ProviderConfig> providers = new ConcurrentHashMap<>();
+
 
     private ConfigCenterConfig configCenter;
 
@@ -74,6 +74,33 @@ public class ConfigManager {
         if (configCenter != null) {
             checkDuplicate(this.configCenter, configCenter);
             this.configCenter = configCenter;
+        }
+    }
+
+    public void addRegistries(List<RegistryConfig> registryConfigs) {
+        if (registryConfigs != null) {
+            registryConfigs.forEach(this::addRegistry);
+        }
+    }
+
+    public void addRegistry(RegistryConfig registryConfig) {
+        if (registryConfig == null) {
+            return;
+        }
+
+        String key = StringUtils.isNotEmpty(registryConfig.getId())
+                ? registryConfig.getId()
+                : (registryConfig.isDefault() == null || registryConfig.isDefault()) ? DEFAULT_KEY : null;
+
+        if (StringUtils.isEmpty(key)) {
+            throw new IllegalStateException("A RegistryConfig should either has an id or it's the default one, " + registryConfig);
+        }
+
+        if (registries.containsKey(key) && !registryConfig.equals(registries.get(key))) {
+            logger.warn("Duplicate RegistryConfig found, there already has one default RegistryConfig or more than two RegistryConfigs have the same id, " +
+                    "you can try to give each RegistryConfig a different id. " + registryConfig);
+        } else {
+            registries.put(key, registryConfig);
         }
     }
 
