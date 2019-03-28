@@ -46,6 +46,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
         if (ref == null) {
             init();
         }
+        return ref;
     }
 
     public void checkAndUpdateSubConfigs() {

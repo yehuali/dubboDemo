@@ -5,10 +5,13 @@ import com.examle.core.common.URL;
 import com.examle.core.configcenter.DynamicConfiguration;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.recipes.cache.ChildData;
+import org.apache.curator.framework.recipes.cache.TreeCache;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
 import static org.apache.curator.framework.CuratorFrameworkFactory.newClient;
@@ -17,6 +20,8 @@ public class ZookeeperDynamicConfiguration implements DynamicConfiguration {
     private static final Logger logger = LoggerFactory.getLogger(ZookeeperDynamicConfiguration.class);
 
     private CuratorFramework client;
+
+    private TreeCache treeCache;
 
     ZookeeperDynamicConfiguration(URL url) {
         RetryPolicy policy = new ExponentialBackoffRetry(1000, 3);
@@ -45,4 +50,14 @@ public class ZookeeperDynamicConfiguration implements DynamicConfiguration {
         //建立本地缓存
 
     }
+
+    @Override
+    public Object getInternalProperty(String key) {
+        ChildData childData = treeCache.getCurrentData(key);
+        if (childData != null) {
+            return new String(childData.getData(), StandardCharsets.UTF_8);
+        }
+        return null;
+    }
+
 }

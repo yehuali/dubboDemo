@@ -19,4 +19,9 @@ public class InmemoryConfiguration  extends AbstractPrefixConfiguration{
             this.store.putAll(properties);
         }
     }
+
+    @Override
+    public Object getInternalProperty(String key) {
+        return store.get(key);
+    }
 }
