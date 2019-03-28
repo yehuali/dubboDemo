@@ -7,7 +7,11 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD})
 public @interface Parameter {
     String key() default "";
+
     boolean excluded() default false;
+
     boolean escaped() default false;
+
+    boolean useKeyAsProperty() default true;
 
 }

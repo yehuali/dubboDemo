@@ -50,6 +50,7 @@
         - 分析
            - ExtensionLoader的type为需要扩展的类，objectFactory为ExtensionFactory的扩展（源码得出为AdaptiveExtensionFactory）
            - 顺序： 1.通过配置文件加载adaptive类（如果没有采用动态编程的方式） 2.通过adpative类去代理扩展类（从配置文件加载）
+           - 通过adpative类去代理扩展类： 1.通过URL获取key 2.通过key找到相应的扩展类
         - @SPI、@Activate、@Adaptive注解分析
             - 需要扩展的类加上@SPI注解
             - 扩展的实现类加上@Activate注解
@@ -66,7 +67,7 @@
     
 4.  动态编程
 
-5.  服务注册   
+5.  服务导出   
     - URL格式
     ![loadRegistries的map存放信息](https://github.com/yehuali/dubboDemo/tree/master/images/loadRegistries的map存放信息.jpg)
     ```
@@ -75,10 +76,35 @@
     ![doExportUrlsFor1Protocol的map信息](https://github.com/yehuali/dubboDemo/tree/master/images/doExportUrlsFor1Protocol的map信息.jpg)
     - 服务注册流程图
     ![服务注册流程图](https://github.com/yehuali/dubboDemo/tree/master/images/服务注册流程图.png)
+    - Invoker 
+        - 创建Wrapper(通过操作字节码生成Wrapper的子类)
+            ```
+                ClassGenerator cc = ClassGenerator.newInstance(cl);
+                cc.setClassName //类名
+                cc.setSuperClass   //父类名
+                cc.addDefaultConstructor(); //默认无参构造
+                cc.addField("") //添加字段
+                cc.addMethod //添加方法
+                Class<?> wc = cc.toClass(); //转换为class类
+                wc.newInstance() //实例化
+                
+            ```
+         - 封装成Invoker 
+            - Invoker.invoker最终调用 Wrapper.invokeMethod 
     - 注册中心
     
+6.  服务引用
+    - 引用时机
+        - Spring容器调用ReferenceBean的afterPropertiesSet引用服务（饿汉式）
+        - 在ReferenceBean对应的服务被注入到其他类中引用（懒汉式）
+        - 默认情况下，Dubbo使用懒汉式。如果需要饿汉式，通过配置<dubbo:reference>的init属性开启
+    - 引用入口
+        - ReferenceBean的getObject方法
+            - 当服务被注入其他类时,Spring会第一时间调用getObject方法
+                - 不管哪种引用，最后会得到一个Invoker实例，但并不能暴露给用户使用，通过代理工厂类ProxyFactory为服务接口生成代理类
+     
 
-6.  ServiceBean的源码分析
+7.  ServiceBean的源码分析
     - 参考资料：https://github.com/shuaijunlan/shuaijunlan.github.io/blob/master/images/ServiceBean.png?raw=true
     - ServiceBean类继承关系
     ![ServiceBean类继承关系](https://github.com/shuaijunlan/shuaijunlan.github.io/blob/master/images/ServiceBean.png?raw=true)

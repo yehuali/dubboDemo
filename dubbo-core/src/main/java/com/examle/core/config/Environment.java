@@ -14,13 +14,28 @@ public class Environment {
 
     private Configuration dynamicConfiguration;
 
+    private boolean configCenterFirst = true;
+
     public static Environment getInstance() {
         return INSTANCE;
     }
 
+
+    /**
+     * 为每个调用创建实例，因为它是在启动时调用，所以我认为潜在的成本并不大
+     * 否则，如果使用缓存，我们应该确保每个配置都有一个唯一的id,这很难保证，因为是在用户这边
+     * @param prefix
+     * @param id
+     * @return
+     */
     public CompositeConfiguration getConfiguration(String prefix, String id) {
         CompositeConfiguration compositeConfiguration = new CompositeConfiguration();
+        /**
+         * 配置中心有更高的权限
+         * AppExternalConfig、ExternalConfig、PropertiesConfig待加入
+         */
         compositeConfiguration.addConfiguration(this.getSystemConfig(prefix, id));
+
         return compositeConfiguration;
     }
 
@@ -48,6 +63,10 @@ public class Environment {
 
     public void setDynamicConfiguration(Configuration dynamicConfiguration) {
         this.dynamicConfiguration = dynamicConfiguration;
+    }
+
+    public boolean isConfigCenterFirst() {
+        return configCenterFirst;
     }
 
 }

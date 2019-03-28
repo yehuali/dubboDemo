@@ -53,4 +53,19 @@ public class Constants {
 
     public static final String PROVIDER_SIDE = "provider";
 
+    public static final String SCOPE_KEY = "scope";
+
+    public static final String SCOPE_REMOTE = "remote";
+
+    public static final String SCOPE_LOCAL = "local";
+
+    public static final String SCOPE_NONE = "none";
+
+    public static final String CONSUMER_SIDE = "consumer";
+
+    public static final String GENERIC_SERIALIZATION_NATIVE_JAVA = "nativejava";
+
+    public static final String GENERIC_SERIALIZATION_DEFAULT = "true";
+
+    public static final String GENERIC_SERIALIZATION_BEAN = "bean";
 }

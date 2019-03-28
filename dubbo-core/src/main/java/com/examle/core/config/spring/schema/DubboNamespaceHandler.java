@@ -4,6 +4,7 @@ import com.examle.core.config.ApplicationConfig;
 import com.examle.core.config.ProtocolConfig;
 import com.examle.core.config.RegistryConfig;
 import com.examle.core.config.spring.ConfigCenterBean;
+import com.examle.core.config.spring.ReferenceBean;
 import com.examle.core.config.spring.ServiceBean;
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
@@ -21,5 +22,6 @@ public class DubboNamespaceHandler extends NamespaceHandlerSupport {
         registerBeanDefinitionParser("config-center", new DubboBeanDefinitionParser(ConfigCenterBean.class, true));
         registerBeanDefinitionParser("protocol", new DubboBeanDefinitionParser(ProtocolConfig.class, true));
         registerBeanDefinitionParser("service", new DubboBeanDefinitionParser(ServiceBean.class, true));
+        registerBeanDefinitionParser("reference", new DubboBeanDefinitionParser(ReferenceBean.class, false));
     }
 }

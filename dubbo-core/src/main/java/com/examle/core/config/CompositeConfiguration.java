@@ -16,4 +16,8 @@ public class CompositeConfiguration {
         }
         this.configList.add(configuration);
     }
+
+    public void addConfiguration(int pos, Configuration configuration) {
+        this.configList.add(pos, configuration);
+    }
 }

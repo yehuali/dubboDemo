@@ -23,6 +23,7 @@ public class ConfigManager {
     private Map<String, ProtocolConfig> protocols = new ConcurrentHashMap<>();
     private Map<String, RegistryConfig> registries = new ConcurrentHashMap<>();
     private Map<String, ProviderConfig> providers = new ConcurrentHashMap<>();
+    private Map<String, ConsumerConfig> consumers = new ConcurrentHashMap<>();
 
 
     private ConfigCenterConfig configCenter;
@@ -130,5 +131,13 @@ public class ConfigManager {
         } else {
             protocols.put(key, protocolConfig);
         }
+    }
+
+    public void addConsumer(ConsumerConfig consumerConfig) {
+
+    }
+
+    public Optional<ConsumerConfig> getDefaultConsumer() {
+        return Optional.ofNullable(consumers.get(DEFAULT_KEY));
     }
 }
