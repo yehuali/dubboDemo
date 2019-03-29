@@ -3,6 +3,7 @@ package com.examle.core.config;
 import com.examle.core.common.Constants;
 import com.examle.core.common.utils.StringUtils;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -10,7 +11,14 @@ public class Environment {
 
     private static final Environment INSTANCE = new Environment();
 
+    private Map<String, PropertiesConfiguration> propertiesConfigs = new ConcurrentHashMap<>();
     private Map<String, SystemConfiguration> systemConfigs = new ConcurrentHashMap<>();
+    private Map<String, InmemoryConfiguration> externalConfigs = new ConcurrentHashMap<>();
+    private Map<String, InmemoryConfiguration> appExternalConfigs = new ConcurrentHashMap<>();
+
+
+    private Map<String, String> externalConfigurationMap = new HashMap<>();
+    private Map<String, String> appExternalConfigurationMap = new HashMap<>();
 
     private Configuration dynamicConfiguration;
 
@@ -35,8 +43,30 @@ public class Environment {
          * AppExternalConfig、ExternalConfig、PropertiesConfig待加入
          */
         compositeConfiguration.addConfiguration(this.getSystemConfig(prefix, id));
-
+        compositeConfiguration.addConfiguration(this.getAppExternalConfig(prefix, id));
+        compositeConfiguration.addConfiguration(this.getExternalConfig(prefix, id));
+        compositeConfiguration.addConfiguration(this.getPropertiesConfig(prefix, id));
         return compositeConfiguration;
+    }
+
+    public PropertiesConfiguration getPropertiesConfig(String prefix, String id) {
+        return propertiesConfigs.computeIfAbsent(toKey(prefix, id), k -> new PropertiesConfiguration(prefix, id));
+    }
+
+    public InmemoryConfiguration getExternalConfig(String prefix, String id) {
+        return externalConfigs.computeIfAbsent(toKey(prefix, id), k -> {
+            InmemoryConfiguration configuration = new InmemoryConfiguration(prefix, id);
+            configuration.setProperties(externalConfigurationMap);
+            return configuration;
+        });
+    }
+
+    public InmemoryConfiguration getAppExternalConfig(String prefix, String id) {
+        return appExternalConfigs.computeIfAbsent(toKey(prefix, id), k -> {
+            InmemoryConfiguration configuration = new InmemoryConfiguration(prefix, id);
+            configuration.setProperties(appExternalConfigurationMap);
+            return configuration;
+        });
     }
 
     public SystemConfiguration getSystemConfig(String prefix, String id) {

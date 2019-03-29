@@ -64,4 +64,20 @@ public class Version {
             return defaultVersion;
         }
     }
+
+    public static void checkDuplicate(Class<?> cls) {
+        checkDuplicate(cls, false);
+    }
+
+    public static void checkDuplicate(Class<?> cls, boolean failOnError) {
+        checkDuplicate(cls.getName().replace('.', '/') + ".class", failOnError);
+    }
+
+    public static void checkDuplicate(String path, boolean failOnError) {
+        try {
+
+        }catch (Throwable e){
+            logger.error(e.getMessage(), e);
+        }
+    }
 }

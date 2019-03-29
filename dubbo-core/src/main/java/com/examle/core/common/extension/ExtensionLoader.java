@@ -95,7 +95,22 @@ public class ExtensionLoader<T> {
         try {
             if (objectFactory != null) {
                 for (Method method : instance.getClass().getMethods()) {
+                    if (method.getName().startsWith("set")
+                            && method.getParameterTypes().length == 1
+                            && Modifier.isPublic(method.getModifiers())) {
+                        Class<?> pt = method.getParameterTypes()[0];
+                        try{
+                            String property = method.getName().length() > 3 ? method.getName().substring(3, 4).toLowerCase() + method.getName().substring(4) : "";
+                            Object object = objectFactory.getExtension(pt, property);//根据ExtensionFactory的代理类获取待注入类
+                            if (object != null) {
+                                method.invoke(instance, object);
+                            }
+                        }catch (Exception e){
+                            logger.error("fail to inject via method " + method.getName()
+                                    + " of interface " + type.getName() + ": " + e.getMessage(), e);
+                        }
 
+                    }
                 }
             }
         }catch (Exception e) {

@@ -1,0 +1,2 @@
+dubbo=com.examle.core.registry.dubbo.DubboRegistryFactory
+zookeeper=com.examle.core.registry.zookeeper.ZookeeperRegistryFactory

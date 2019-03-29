@@ -3,6 +3,8 @@ package com.examle.core.common;
 import com.examle.core.common.utils.NetUtils;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.*;
 
 public class URL implements Serializable {
@@ -49,6 +51,9 @@ public class URL implements Serializable {
         this.parameters = null;
     }
 
+    public URL(String protocol, String host, int port, Map<String, String> parameters) {
+        this(protocol, null, null, host, port, null, parameters);
+    }
     public URL(String protocol, String username, String password, String host, int port, String path, Map<String, String> parameters) {
         if ((username == null || username.length() == 0)
                 && password != null && password.length() > 0) {
@@ -351,5 +356,31 @@ public class URL implements Serializable {
 
     public URL setHost(String host) {
         return new URL(protocol, username, password, host, port, path, getParameters());
+    }
+
+
+    public URL addParameterAndEncoded(String key, String value) {
+        if (value == null || value.length() == 0) {
+            return this;
+        }
+        return addParameter(key, encode(value));
+    }
+
+    public static String encode(String value) {
+        if (value == null || value.length() == 0) {
+            return "";
+        }
+        try {
+            return URLEncoder.encode(value, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    public URL removeParameter(String key) {
+        if (key == null || key.length() == 0) {
+            return this;
+        }
+        return removeParameters(key);
     }
 }

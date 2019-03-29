@@ -1,15 +1,19 @@
 package com.examle.core.config;
 
 import com.examle.core.common.Constants;
+import com.examle.core.common.URL;
+import com.examle.core.common.Version;
 import com.examle.core.common.bytecode.Wrapper;
+import com.examle.core.common.extension.ExtensionLoader;
 import com.examle.core.common.utils.ConfigUtils;
+import com.examle.core.common.utils.NetUtils;
 import com.examle.core.common.utils.StringUtils;
 import com.examle.core.config.context.ConfigManager;
+import com.examle.core.rpc.Invoker;
+import com.examle.core.rpc.Protocol;
+import com.examle.core.rpc.protocol.injvm.InjvmProtocol;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 public class ReferenceConfig<T> extends AbstractReferenceConfig {
     private String interfaceName;
@@ -19,6 +23,27 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
     protected String mock;
 
     private ConsumerConfig consumer;
+
+    /**
+     * The invoker of the reference service
+     */
+    private transient volatile Invoker<?> invoker;
+    /**
+     * The url for peer-to-peer invocation
+     */
+    private String url;
+
+    /**
+     * The url of the reference service
+     */
+    private final List<URL> urls = new ArrayList<URL>();
+
+    private static final Protocol refprotocol = ExtensionLoader.getExtensionLoader(Protocol.class).getAdaptiveExtension();
+
+    /**
+     * The method configs
+     */
+    private List<MethodConfig> methods;
 
     //接口代理引用
     private transient volatile T ref;
@@ -73,6 +98,10 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
         );
     }
 
+    public ConsumerConfig getConsumer() {
+        return consumer;
+    }
+
     public void setConsumer(ConsumerConfig consumer) {
         ConfigManager.getInstance().addConsumer(consumer);
         this.consumer = consumer;
@@ -100,6 +129,54 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
         appendParameters(map, module);
         appendParameters(map, consumer, Constants.DEFAULT_KEY);
         appendParameters(map, this);
+        Map<String, Object> attributes = null;
+        if (methods != null && !methods.isEmpty()) {
+
+        }
+        String hostToRegistry = ConfigUtils.getSystemProperty(Constants.DUBBO_IP_TO_REGISTRY);
+        if (hostToRegistry == null || hostToRegistry.length() == 0) {
+            hostToRegistry = NetUtils.getLocalHost();
+        }
+        map.put(Constants.REGISTER_IP_KEY, hostToRegistry);
+        ref = createProxy(map);
+    }
+
+    private T createProxy(Map<String, String> map) {
+        URL tmpUrl = new URL("temp", "localhost", 0, map);
+        final boolean isJvmRefer;
+        if (isInjvm() == null) {
+            if (url != null && url.length() > 0) {
+                isJvmRefer = false;
+            }else{
+                //默认情况下，如果有本地服务，则引用它
+                isJvmRefer = InjvmProtocol.getInjvmProtocol().isInjvmRefer(tmpUrl);
+            }
+        }else{
+            isJvmRefer = false;//待写
+        }
+
+        if (isJvmRefer) {
+
+        }else{
+            if (url != null && url.length() > 0) {
+
+            }else{//从注册中心的配置中组装URL
+                List<URL> us = loadRegistries(false);
+                if (us != null && !us.isEmpty()) {
+                    for (URL u : us) {
+                        urls.add(u.addParameterAndEncoded(Constants.REFER_KEY, StringUtils.toQueryString(map)));
+                    }
+                }
+                if (urls.isEmpty()) {
+                    throw new IllegalStateException("No such any registry to reference " + interfaceName + " on the consumer " + NetUtils.getLocalHost() + " use dubbo version " + Version.getVersion() + ", please config <dubbo:registry address=\"...\" /> to your spring config.");
+                }
+            }
+
+            if (urls.size() == 1) {
+                invoker = refprotocol.refer(interfaceClass, urls.get(0));
+            }
+        }
+        return null;
     }
 
     void checkStubAndLocal(Class<?> interfaceClass) {

@@ -27,22 +27,18 @@
         - 通过ExtensionLoader加载指定实现类，配置文件需放置在META-INF/dubbo
         - 支持按需加载接口实现类，还增加了IOC和AOP等特性
      ```
-     配置文件：
-      optimusPrime = org.apache.spi.OptimusPrime
-      bumblebee = org.apache.spi.Bumblebee
-     
-    public class DubboSPITest {
-
-        @Test
-        public void sayHello() throws Exception {
-            ExtensionLoader<Robot> extensionLoader = 
-                ExtensionLoader.getExtensionLoader(Robot.class);
-            Robot optimusPrime = extensionLoader.getExtension("optimusPrime");
-            optimusPrime.sayHello();
-            Robot bumblebee = extensionLoader.getExtension("bumblebee");
-            bumblebee.sayHello();
-        }
-    }
+    package com.examle.core.rpc;
+    import com.examle.core.common.extension.ExtensionLoader;
+    public class ProxyFactory$Adaptive implements com.examle.core.rpc.ProxyFactory {
+   	public com.examle.core.rpc.Invoker getInvoker(java.lang.Object arg0, java.lang.Class arg1, com.examle.core.common.URL arg2) throws com.examle.core.rpc.RpcException {
+   		if (arg2 == null) throw new IllegalArgumentException("url == null");
+   		com.examle.core.common.URL url = arg2;
+   		String extName = url.getParameter("proxy", "javassist");
+   		if(extName == null) throw new IllegalStateException("Fail to get extension(com.examle.core.rpc.ProxyFactory) name from url(" + url.toString() + ") use keys([proxy])");
+   		com.examle.core.rpc.ProxyFactory extension = (com.examle.core.rpc.ProxyFactory)ExtensionLoader.getExtensionLoader(com.examle.core.rpc.ProxyFactory.class).getExtension(extName);
+   		return extension.getInvoker(arg0, arg1, arg2);
+   }
+   }
     ```
     - 总结
         - 简易流程图
@@ -56,6 +52,29 @@
             - 扩展的实现类加上@Activate注解
             - @Adaptive为标记实现一个适配器类，并且动态生成（通过代理生成）
                 - 参考资料：https://blog.csdn.net/qq924862077/article/details/77510121
+                
+          ```
+          EXTENSION_LOADERS 例如protocol和对应ExtensionLoader
+            1.ExtensionLoader（new创建）
+              type 扩展接口名
+          	objectFactory：ExtensionFactory的AdaptiveExtension --->AdaptiveExtensionFactory 
+          cachedAdaptiveInstance:存放代理类
+            1.代理类含有需要代理的类（扩展类）
+              -->cachedClasses:存放扩展类（从配置文件获取）
+          	1.1 需要扩展的类需要加上SPI注解，注解上的值为默认扩展
+            2.如果从配置文件没有加载代理类，需要单独创建
+              2.1  单独创建需要通过动态编程的方式实现 
+          	
+          3.通过代理类加载扩展类
+            3.1 在EXTENSION_LOADERS中根据type查找ExtensionLoader
+            3.2 根据url中的name在cachedInstances(<String, Holder>)中查找实例（刚开始为空）
+               3.2.1 根据扩展类名在EXTENSION_INSTANCES中查找、
+          	       --->如果没有，则clazz.newInstance()后放入其中
+               3.2.2 遍历扩展类实例的set方法，对其实例属性进行注入
+          		  --->objectFactory.getExtension(pt, property)//根据ExtensionFactory的代理类获取待注入类
+          				--->根据ExtensionFactory的扩展类去加载（没有则添加）
+          				
+          ```      
 3.  自定义Bean的过程
     - xml到beanDefinition过程
     ![beanDefinition生成过程](https://github.com/yehuali/dubboDemo/tree/master/images/xml到beanDefinition解析过程.jpg)  

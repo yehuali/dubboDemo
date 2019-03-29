@@ -5,6 +5,8 @@ import org.springframework.util.CollectionUtils;
 
 import java.io.PrintWriter;
 import java.util.Collection;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.regex.Pattern;
 
 public class StringUtils {
@@ -85,5 +87,36 @@ public class StringUtils {
 
     public static int parseInteger(String str) {
         return isInteger(str) ? Integer.parseInt(str) : 0;
+    }
+
+    public static String toQueryString(Map<String, String> ps) {
+        StringBuilder buf = new StringBuilder();
+        if (ps != null && ps.size() > 0) {
+            for (Map.Entry<String, String> entry : new TreeMap<String, String>(ps).entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue();
+                if (isNoneEmpty(key, value)) {
+                    if (buf.length() > 0) {
+                        buf.append("&");
+                    }
+                    buf.append(key);
+                    buf.append("=");
+                    buf.append(value);
+                }
+            }
+        }
+        return buf.toString();
+    }
+
+    public static boolean isNoneEmpty(final String... ss) {
+        if (ArrayUtils.isEmpty(ss)) {
+            return false;
+        }
+        for (final String s : ss){
+            if (isEmpty(s)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

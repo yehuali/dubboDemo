@@ -1,5 +1,6 @@
 package com.examle.core.config.spring.schema;
 
+import com.examle.core.common.Version;
 import com.examle.core.config.ApplicationConfig;
 import com.examle.core.config.ProtocolConfig;
 import com.examle.core.config.RegistryConfig;
@@ -14,7 +15,9 @@ import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
  */
 public class DubboNamespaceHandler extends NamespaceHandlerSupport {
 
-
+    static {
+        Version.checkDuplicate(DubboNamespaceHandler.class);
+    }
     @Override
     public void init() {
         registerBeanDefinitionParser("application", new DubboBeanDefinitionParser(ApplicationConfig.class, true));

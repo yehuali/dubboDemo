@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class AbstractRegistryFactory implements RegistryFactory {
+public abstract  class AbstractRegistryFactory implements RegistryFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractRegistryFactory.class);
 
@@ -33,9 +33,21 @@ public class AbstractRegistryFactory implements RegistryFactory {
                 .removeParameters(Constants.EXPORT_KEY, Constants.REFER_KEY);
 
         String key = url.toServiceStringWithoutResolving();
-
+        //锁定注册表访问过程，以确保注册表的单个实例
+        LOCK.lock();
+        try {
+            Registry registry = REGISTRIES.get(key);
+            if (registry != null) {
+                return registry;
+            }
+            registry = createRegistry(url);
+        }finally {
+            LOCK.unlock();
+        }
         return null;
     }
+
+    protected abstract Registry createRegistry(URL url);
 
     public static void destroyAll() {
         if (LOGGER.isInfoEnabled()) {

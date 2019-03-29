@@ -1,3 +1,2 @@
 adaptive=com.examle.core.common.extension.factory.AdaptiveExtensionFactory
 spi=com.examle.core.common.extension.factory.SpiExtensionFactory
-

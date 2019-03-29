@@ -20,6 +20,12 @@ public class InmemoryConfiguration  extends AbstractPrefixConfiguration{
         }
     }
 
+    public void setProperties(Map<String, String> properties) {
+        if (properties != null) {
+            this.store = properties;
+        }
+    }
+
     @Override
     public Object getInternalProperty(String key) {
         return store.get(key);

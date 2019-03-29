@@ -68,4 +68,20 @@ public class Constants {
     public static final String GENERIC_SERIALIZATION_DEFAULT = "true";
 
     public static final String GENERIC_SERIALIZATION_BEAN = "bean";
+
+    public static final String DUBBO_PROPERTIES_KEY = "dubbo.properties.file";
+
+    public static final String DEFAULT_DUBBO_PROPERTIES = "dubbo.properties";
+
+    public static final String DUBBO_IP_TO_REGISTRY = "DUBBO_IP_TO_REGISTRY";
+
+    public static final String REGISTER_IP_KEY = "register.ip";
+
+    public static final String GENERIC_KEY = "generic";
+
+    public static final String DEFAULT_REGISTRY = "dubbo";
+
+    public static final String CLIENT_KEY = "client";
+
+    public static final String TRANSPORTER_KEY = "transporter";
 }

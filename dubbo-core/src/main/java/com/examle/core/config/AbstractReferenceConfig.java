@@ -10,6 +10,10 @@ import java.lang.reflect.Method;
 public abstract class AbstractReferenceConfig extends AbstractInterfaceConfig {
 
     /**
+     * 是否从当前JVM中查找引用的实例
+     */
+    protected Boolean injvm;
+    /**
      * Whether to use generic interface
      */
     protected String generic;
@@ -17,6 +21,11 @@ public abstract class AbstractReferenceConfig extends AbstractInterfaceConfig {
     @Parameter(excluded = true)
     public Boolean isGeneric() {
         return ProtocolUtils.isGeneric(generic);
+    }
+
+    @Deprecated
+    public Boolean isInjvm() {
+        return injvm;
     }
 
 
