@@ -81,7 +81,7 @@
           ```      
 3.  自定义Bean的过程
     - xml到beanDefinition过程
-    ![beanDefinition生成过程](https://github.com/yehuali/dubboDemo/tree/master/images/xml到beanDefinition解析过程.jpg)  
+    ![beanDefinition生成过程](https://github.com/yehuali/dubboDemo/tree/master/images/xml%E5%88%B0beanDefinition%E8%A7%A3%E6%9E%90%E8%BF%87%E7%A8%8B.jpg)  
         - 通过id（>name>interface属性>类名）在容器里注册beanDefinition      
     - beanDefinition到bean的过程
     ![bean生成过程](http://www.ibm.com/developerworks/cn/java/j-lo-spring-principle/origin_image012.gif)
