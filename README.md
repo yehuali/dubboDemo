@@ -30,28 +30,31 @@
     package com.examle.core.rpc;
     import com.examle.core.common.extension.ExtensionLoader;
     public class ProxyFactory$Adaptive implements com.examle.core.rpc.ProxyFactory {
-   	public com.examle.core.rpc.Invoker getInvoker(java.lang.Object arg0, java.lang.Class arg1, com.examle.core.common.URL arg2) throws com.examle.core.rpc.RpcException {
-   		if (arg2 == null) throw new IllegalArgumentException("url == null");
-   		com.examle.core.common.URL url = arg2;
-   		String extName = url.getParameter("proxy", "javassist");
-   		if(extName == null) throw new IllegalStateException("Fail to get extension(com.examle.core.rpc.ProxyFactory) name from url(" + url.toString() + ") use keys([proxy])");
-   		com.examle.core.rpc.ProxyFactory extension = (com.examle.core.rpc.ProxyFactory)ExtensionLoader.getExtensionLoader(com.examle.core.rpc.ProxyFactory.class).getExtension(extName);
-   		return extension.getInvoker(arg0, arg1, arg2);
-   }
+        public com.examle.core.rpc.Invoker getInvoker(java.lang.Object arg0, java.lang.Class arg1, com.examle.core.common.URL arg2) throws com.examle.core.rpc.RpcException {
+            if (arg2 == null) throw new IllegalArgumentException("url == null");
+            com.examle.core.common.URL url = arg2;
+            String extName = url.getParameter("proxy", "javassist");
+            if(extName == null) throw new IllegalStateException("Fail to get extension(com.examle.core.rpc.ProxyFactory) name from url(" + url.toString() + ") use keys([proxy])");
+            com.examle.core.rpc.ProxyFactory extension = (com.examle.core.rpc.ProxyFactory)ExtensionLoader.getExtensionLoader(com.examle.core.rpc.ProxyFactory.class).getExtension(extName);
+            return extension.getInvoker(arg0, arg1, arg2);
+       }
    }
     ```
-    - 总结
-        - 简易流程图
-        ![spi简易图](https://github.com/yehuali/dubboDemo/tree/master/images/SPI简易图.png)
-        - 分析
-           - ExtensionLoader的type为需要扩展的类，objectFactory为ExtensionFactory的扩展（源码得出为AdaptiveExtensionFactory）
-           - 顺序： 1.通过配置文件加载adaptive类（如果没有采用动态编程的方式） 2.通过adpative类去代理扩展类（从配置文件加载）
-           - 通过adpative类去代理扩展类： 1.通过URL获取key 2.通过key找到相应的扩展类
-        - @SPI、@Activate、@Adaptive注解分析
-            - 需要扩展的类加上@SPI注解
-            - 扩展的实现类加上@Activate注解
-            - @Adaptive为标记实现一个适配器类，并且动态生成（通过代理生成）
-                - 参考资料：https://blog.csdn.net/qq924862077/article/details/77510121
+    
+###总结
+- 简易流程图
+  ![spi简易图](https://github.com/yehuali/dubboDemo/blob/master/images/SPI%E7%AE%80%E6%98%93%E5%9B%BE.png)
+    - 分析
+       - ExtensionLoader的type为需要扩展的类，objectFactory为ExtensionFactory的扩展（源码得出为AdaptiveExtensionFactory）
+       - 顺序： 1.通过配置文件加载adaptive类（如果没有采用动态编程的方式） 2.通过adpative类去代理扩展类（从配置文件加载）
+       - 通过adpative类去代理扩展类： 1.通过URL获取key 2.通过key找到相应的扩展类
+    - @SPI、@Activate、@Adaptive注解分析
+        - 需要扩展的类加上@SPI注解
+        - 扩展的实现类加上@Activate注解
+        - @Adaptive为标记实现一个适配器类，并且动态生成（通过代理生成）
+            - 参考资料：https://blog.csdn.net/qq924862077/article/details/77510121
+                
+                
                 
           ```
           EXTENSION_LOADERS 例如protocol和对应ExtensionLoader
