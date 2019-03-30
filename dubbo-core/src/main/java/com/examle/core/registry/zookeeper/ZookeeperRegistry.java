@@ -5,7 +5,10 @@ import com.examle.core.registry.support.FailbackRegistry;
 
 public class ZookeeperRegistry extends FailbackRegistry {
 
-    public ZookeeperRegistry(URL url, ZookeeperTransporter zookeeperTransporter) {
+    private final ZookeeperClient zkClient;
 
+    public ZookeeperRegistry(URL url, ZookeeperTransporter zookeeperTransporter) {
+        super(url);
+        zkClient = zookeeperTransporter.connect(url);
     }
 }

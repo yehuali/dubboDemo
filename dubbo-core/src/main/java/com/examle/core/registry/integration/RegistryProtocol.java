@@ -17,6 +17,10 @@ public class RegistryProtocol implements Protocol {
      */
     private RegistryFactory registryFactory;
 
+    /**
+     * 代理会遍历set方法并进行注入
+     * @param registryFactory
+     */
     public void setRegistryFactory(RegistryFactory registryFactory) {
         this.registryFactory = registryFactory;
     }
