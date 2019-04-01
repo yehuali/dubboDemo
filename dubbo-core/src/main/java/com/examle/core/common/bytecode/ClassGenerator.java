@@ -200,6 +200,14 @@ public final class ClassGenerator {
         return this;
     }
 
+    /**
+     * public com.example.model.Result sayHello(java.lang.String arg0){
+     *      Object[] args = new Object[1];
+     *      args[0] = ($w)$1;
+     *      Object ret = handler.invoke(this, methods[0], args);
+     *      return (com.example.model.Result)ret;
+     * }
+     */
     public ClassGenerator addMethod(String name, int mod, Class<?> rt, Class<?>[] pts, Class<?>[] ets,
                                     String body) {
         StringBuilder sb = new StringBuilder();

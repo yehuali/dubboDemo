@@ -62,7 +62,6 @@ public abstract class Proxy {
         Proxy proxy = null;
         synchronized (cache) {
             do {
-                Object value = cache.get(key);
                 cache.put(key, PendingGenerationMarker);
                 break;
             }while (true);
@@ -101,6 +100,13 @@ public abstract class Proxy {
                     Class<?> rt = method.getReturnType();
                     Class<?>[] pts = method.getParameterTypes();
 
+                    /**
+                     * code的值：
+                     * Object[] args = new Object[1];
+                     * args[0] = ($w)$1;
+                     * Object ret = handler.invoke(this, methods[0], args);
+                     * return (com.example.model.Result)ret;
+                     */
                     StringBuilder code = new StringBuilder("Object[] args = new Object[").append(pts.length).append("];");
                     for (int j = 0; j < pts.length; j++) {
                         code.append(" args[").append(j).append("] = ($w)$").append(j + 1).append(";");
@@ -113,6 +119,7 @@ public abstract class Proxy {
                     methods.add(method);
                     ccp.addMethod(method.getName(), method.getModifiers(), rt, pts, method.getExceptionTypes(), code.toString());
                 }
+            }
 
                 if (pkg == null) {
                     pkg = PACKAGE_NAME;
@@ -137,7 +144,6 @@ public abstract class Proxy {
                 ccm.addMethod("public Object newInstance(" + InvocationHandler.class.getName() + " h){ return new " + pcn + "($1); }");
                 Class<?> pc = ccm.toClass();
                 proxy = (Proxy) pc.newInstance();
-            }
 
         }catch (RuntimeException e) {
             throw e;
