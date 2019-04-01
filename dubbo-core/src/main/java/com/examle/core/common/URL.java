@@ -4,8 +4,10 @@ import com.examle.core.common.utils.NetUtils;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class URL implements Serializable {
     private final String protocol;
@@ -54,6 +56,7 @@ public class URL implements Serializable {
     public URL(String protocol, String host, int port, Map<String, String> parameters) {
         this(protocol, null, null, host, port, null, parameters);
     }
+
     public URL(String protocol, String username, String password, String host, int port, String path, Map<String, String> parameters) {
         if ((username == null || username.length() == 0)
                 && password != null && password.length() > 0) {
@@ -216,6 +219,64 @@ public class URL implements Serializable {
         return value;
     }
 
+    public int getParameter(String key, int defaultValue) {
+        Number n = getNumbers().get(key);
+        if (n != null) {
+            return n.intValue();
+        }
+        String value = getParameter(key);
+        if (value == null || value.length() == 0) {
+            return defaultValue;
+        }
+        int i = Integer.parseInt(value);
+        getNumbers().put(key, i);
+        return i;
+    }
+
+    private Map<String, Number> getNumbers() {
+        if (numbers == null) { // concurrent initialization is tolerant
+            numbers = new ConcurrentHashMap<String, Number>();
+        }
+        return numbers;
+    }
+
+    public String getBackupAddress() {
+        return getBackupAddress(0);
+    }
+
+    public String getBackupAddress(int defaultPort) {
+        StringBuilder address = new StringBuilder(appendDefaultPort(getAddress(), defaultPort));
+        String[] backups = getParameter(Constants.BACKUP_KEY, new String[0]);
+        if (backups != null && backups.length > 0) {
+            for (String backup : backups) {
+                address.append(",");
+                address.append(appendDefaultPort(backup, defaultPort));
+            }
+        }
+        return address.toString();
+    }
+
+    public String[] getParameter(String key, String[] defaultValue) {
+        String value = getParameter(key);
+        if (value == null || value.length() == 0) {
+            return defaultValue;
+        }
+        return Constants.COMMA_SPLIT_PATTERN.split(value);
+    }
+
+    private String appendDefaultPort(String address, int defaultPort) {
+        if (address != null && address.length() > 0
+                && defaultPort > 0) {
+            int i = address.indexOf(':');
+            if (i < 0) {
+                return address + ":" + defaultPort;
+            } else if (Integer.parseInt(address.substring(i + 1)) == 0) {
+                return address.substring(0, i + 1) + defaultPort;
+            }
+        }
+        return address;
+    }
+
     public boolean getParameter(String key, boolean defaultValue) {
         String value = getParameter(key);
         if (value == null || value.length() == 0) {
@@ -230,6 +291,15 @@ public class URL implements Serializable {
             value = parameters.get(Constants.DEFAULT_KEY_PREFIX + key);
         }
         return value;
+    }
+
+    public List<String> getParameter(String key, List<String> defaultValue) {
+        String value = getParameter(key);
+        if (value == null || value.length() == 0) {
+            return defaultValue;
+        }
+        String[] strArray = Constants.COMMA_SPLIT_PATTERN.split(value);
+        return Arrays.asList(strArray);
     }
 
     public String getIp() {
@@ -383,4 +453,61 @@ public class URL implements Serializable {
         }
         return removeParameters(key);
     }
+
+    public String getAddress() {
+        return port <= 0 ? host : host + ":" + port;
+    }
+
+    public String getParameterAndDecoded(String key) {
+        return getParameterAndDecoded(key, null);
+    }
+
+    public String getParameterAndDecoded(String key, String defaultValue) {
+        return decode(getParameter(key, defaultValue));
+    }
+    public static String decode(String value) {
+        if (value == null || value.length() == 0) {
+            return "";
+        }
+        try {
+            return URLDecoder.decode(value, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    public URL clearParameters() {
+        return new URL(protocol, username, password, host, port, path, new HashMap<String, String>());
+    }
+
+    public URL addParameters(Map<String, String> parameters) {
+        if (parameters == null || parameters.size() == 0) {
+            return this;
+        }
+
+        boolean hasAndEqual = true;
+        for (Map.Entry<String, String> entry : parameters.entrySet()) {
+            String value = getParameters().get(entry.getKey());
+            if (value == null) {
+                if (entry.getValue() != null) {
+                    hasAndEqual = false;
+                    break;
+                }
+            } else {
+                if (!value.equals(entry.getValue())) {
+                    hasAndEqual = false;
+                    break;
+                }
+            }
+        }
+        // return immediately if there's no change
+        if (hasAndEqual) {
+            return this;
+        }
+
+        Map<String, String> map = new HashMap<String, String>(getParameters());
+        map.putAll(parameters);
+        return new URL(protocol, username, password, host, port, path, map);
+    }
+
 }

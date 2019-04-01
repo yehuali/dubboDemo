@@ -1,0 +1,1 @@
+failover=com.examle.core.rpc.cluster.support.FailoverCluster

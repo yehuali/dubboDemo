@@ -41,10 +41,14 @@ public abstract  class AbstractRegistryFactory implements RegistryFactory {
                 return registry;
             }
             registry = createRegistry(url);
+            if (registry == null) {
+                throw new IllegalStateException("Can not create registry " + url);
+            }
+            REGISTRIES.put(key, registry);
+            return registry;
         }finally {
             LOCK.unlock();
         }
-        return null;
     }
 
     protected abstract Registry createRegistry(URL url);

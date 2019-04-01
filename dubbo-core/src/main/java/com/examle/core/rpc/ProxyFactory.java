@@ -10,4 +10,10 @@ public interface ProxyFactory {
 
     @Adaptive({Constants.PROXY_KEY})
     <T> Invoker<T> getInvoker(T proxy, Class<T> type, URL url) throws RpcException;
+
+    @Adaptive({Constants.PROXY_KEY})
+    <T> T getProxy(Invoker<T> invoker) throws RpcException;
+
+    @Adaptive({Constants.PROXY_KEY})
+    <T> T getProxy(Invoker<T> invoker, boolean generic) throws RpcException;
 }

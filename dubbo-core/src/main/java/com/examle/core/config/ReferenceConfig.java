@@ -11,6 +11,7 @@ import com.examle.core.common.utils.StringUtils;
 import com.examle.core.config.context.ConfigManager;
 import com.examle.core.rpc.Invoker;
 import com.examle.core.rpc.Protocol;
+import com.examle.core.rpc.ProxyFactory;
 import com.examle.core.rpc.protocol.injvm.InjvmProtocol;
 
 import java.util.*;
@@ -39,6 +40,8 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
     private final List<URL> urls = new ArrayList<URL>();
 
     private static final Protocol refprotocol = ExtensionLoader.getExtensionLoader(Protocol.class).getAdaptiveExtension();
+
+    private static final ProxyFactory proxyFactory = ExtensionLoader.getExtensionLoader(ProxyFactory.class).getAdaptiveExtension();
 
     /**
      * The method configs
@@ -176,7 +179,8 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
                 invoker = refprotocol.refer(interfaceClass, urls.get(0));
             }
         }
-        return null;
+        // create service proxy
+        return (T) proxyFactory.getProxy(invoker);
     }
 
     void checkStubAndLocal(Class<?> interfaceClass) {

@@ -84,4 +84,15 @@ public class Constants {
     public static final String CLIENT_KEY = "client";
 
     public static final String TRANSPORTER_KEY = "transporter";
+
+    public static final String BACKUP_KEY = "backup";
+
+    public static final Pattern COMMA_SPLIT_PATTERN = Pattern
+            .compile("\\s*[,]+\\s*");
+
+    public static final String TIMEOUT_KEY = "timeout";
+
+    public static final String MONITOR_KEY = "monitor";
+
+    public static final String INTERFACES = "interfaces";
 }
