@@ -1,6 +1,9 @@
 package com.examle.core.rpc.proxy;
 
+import com.examle.core.common.Constants;
 import com.examle.core.rpc.Invoker;
+import com.examle.core.rpc.RpcInvocation;
+import com.examle.core.rpc.support.RpcUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +35,16 @@ public class InvokerInvocationHandler implements InvocationHandler {
         if ("equals".equals(methodName) && parameterTypes.length == 1) {
             return invoker.equals(args[0]);
         }
-        return null;
+        return invoker.invoke(createInvocation(method, args)).recreate();
+    }
+
+    private RpcInvocation createInvocation(Method method, Object[] args) {
+        RpcInvocation invocation = new RpcInvocation(method, args);
+        if (RpcUtils.hasFutureReturnType(method)) {
+            invocation.setAttachment(Constants.FUTURE_RETURNTYPE_KEY, "true");
+            invocation.setAttachment(Constants.ASYNC_KEY, "true");
+        }
+        return invocation;
     }
 
 }

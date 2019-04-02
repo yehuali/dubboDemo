@@ -3,6 +3,9 @@ package com.examle.core.registry.integration;
 import com.examle.core.common.Constants;
 import com.examle.core.common.URL;
 import com.examle.core.common.utils.StringUtils;
+import com.examle.core.registry.Registry;
+import com.examle.core.rpc.Protocol;
+import com.examle.core.rpc.cluster.RouterChain;
 import com.examle.core.rpc.cluster.directory.AbstractDirectory;
 
 import java.util.Map;
@@ -12,6 +15,11 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> {
     private final Class<T> serviceType;
     private final String serviceKey;
     private final Map<String, String> queryMap;
+
+    private Protocol protocol; // Initialization at the time of injection, the assertion is not null
+    private Registry registry;
+
+    protected RouterChain<T> routerChain;
 
     private final URL directoryUrl;//在构造时初始化，断言不为空，并始终分配非空值
     private volatile URL overrideDirectoryUrl;//在构造时初始化，断言不为空，并始终分配非空值
@@ -43,6 +51,14 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> {
                 .removeParameter(Constants.MONITOR_KEY);
     }
 
+    public void setRegistry(Registry registry) {
+        this.registry = registry;
+    }
+
+    public void setProtocol(Protocol protocol) {
+        this.protocol = protocol;
+    }
+
     @Override
     public URL getUrl() {
         return this.overrideDirectoryUrl;
@@ -51,5 +67,13 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> {
     @Override
     public Class<T> getInterface() {
         return serviceType;
+    }
+
+    public void buildRouterChain(URL url) {
+        this.setRouterChain(RouterChain.buildChain(url));
+    }
+
+    public void setRouterChain(RouterChain<T> routerChain) {
+        this.routerChain = routerChain;
     }
 }

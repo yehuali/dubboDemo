@@ -117,6 +117,7 @@
     - 注册中心
     
 6.  服务引用
+    ![服务引用时序图](https://images2018.cnblogs.com/blog/897247/201805/897247-20180523200339537-979371979.jpg)
     - 引用时机
         - Spring容器调用ReferenceBean的afterPropertiesSet引用服务（饿汉式）
         - 在ReferenceBean对应的服务被注入到其他类中引用（懒汉式）
@@ -125,9 +126,14 @@
         - ReferenceBean的getObject方法
             - 当服务被注入其他类时,Spring会第一时间调用getObject方法
                 - 不管哪种引用，最后会得到一个Invoker实例，但并不能暴露给用户使用，通过代理工厂类ProxyFactory为服务接口生成代理类
-     
+        - Protocol的代理类生成Invoker
+            - RegistryProtocol 以及（1.QosProtocolWrapper 2.ProtocolFilterWrapper 3.ProtocolListenerWrapper）包装类
+                - 按照顺序层层包装RegistryProtocol，对外返回ProtocolListenerWrapper包装类（向内调用）
+                - 在QosProtocolWrapper包装时会启用qos服务（netty）
+7.  服务调用过程
+    ![服务调用过程](http://dubbo.apache.org/docs/zh-cn/source_code_guide/sources/images/send-request-process.jpg)
 
-7.  ServiceBean的源码分析
+8.  ServiceBean的源码分析
     - 参考资料：https://github.com/shuaijunlan/shuaijunlan.github.io/blob/master/images/ServiceBean.png?raw=true
     - ServiceBean类继承关系
     ![ServiceBean类继承关系](https://github.com/shuaijunlan/shuaijunlan.github.io/blob/master/images/ServiceBean.png?raw=true)

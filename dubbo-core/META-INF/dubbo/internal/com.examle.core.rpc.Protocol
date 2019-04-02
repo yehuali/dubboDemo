@@ -1,2 +1,4 @@
 injvm=com.examle.core.rpc.protocol.injvm.InjvmProtocol
+
 registry=com.examle.core.registry.integration.RegistryProtocol
+qos=com.examle.core.qos.protocol.QosProtocolWrapper

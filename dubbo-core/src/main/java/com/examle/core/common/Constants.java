@@ -95,4 +95,32 @@ public class Constants {
     public static final String MONITOR_KEY = "monitor";
 
     public static final String INTERFACES = "interfaces";
+
+    public static final String STUB_KEY = "stub";
+
+    public static final String LOCAL_KEY = "local";
+
+    public static final String FUTURE_RETURNTYPE_KEY = "future_returntype";
+
+    public static final String ASYNC_KEY = "async";
+
+    public static final String QOS_ENABLE = "qos.enable";
+
+    public static final String QOS_PORT = "qos.port";
+
+    public static final String ACCEPT_FOREIGN_IP = "qos.accept.foreign.ip";
+
+    public static final String CONSUMER_PROTOCOL = "consumer";
+
+    public static final String ANY_VALUE = "*";
+    /**
+     * simple the registry for provider.
+     */
+    public static final String SIMPLIFIED_KEY = "simplified";
+
+    public static final String CATEGORY_KEY = "category";
+
+    public static final String CONSUMERS_CATEGORY = "consumers";
+
+    public static final String CHECK_KEY = "check";
 }

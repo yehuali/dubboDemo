@@ -464,6 +464,8 @@ public class ExtensionLoader<T> {
                 wrappers = cachedWrapperClasses;
             }
             wrappers.add(clazz);
+            System.out.println("cachedWrapperClasses的size:"+ cachedWrapperClasses.size());
+            System.out.println("wrappers的size:"+ wrappers.size());
         }else {
             clazz.getConstructor();
             if (name == null || name.length() == 0) {
@@ -588,7 +590,9 @@ public class ExtensionLoader<T> {
             injectExtension(instance);
             Set<Class<?>> wrapperClasses = cachedWrapperClasses;
             if (wrapperClasses != null && !wrapperClasses.isEmpty()) {
-
+                for (Class<?> wrapperClass : wrapperClasses) {
+                    instance = injectExtension((T) wrapperClass.getConstructor(type).newInstance(instance));
+                }
             }
             return instance;
         }catch (Throwable t) {

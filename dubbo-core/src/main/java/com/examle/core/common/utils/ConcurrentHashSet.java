@@ -18,16 +18,17 @@ public class ConcurrentHashSet<E> extends AbstractSet<E> implements Set<E>, java
 
     @Override
     public Iterator<E> iterator() {
-        return null;
+        return map.keySet().iterator();
     }
 
     @Override
     public int size() {
-        return 0;
+        return map.size();
     }
 
     @Override
     public boolean add(E e) {
         return map.put(e, PRESENT) == null;
     }
+
 }

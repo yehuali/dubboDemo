@@ -510,4 +510,18 @@ public class URL implements Serializable {
         return new URL(protocol, username, password, host, port, path, map);
     }
 
+    public URL addParameters(String... pairs) {
+        if (pairs == null || pairs.length == 0) {
+            return this;
+        }
+        if (pairs.length % 2 != 0) {
+            throw new IllegalArgumentException("Map pairs can not be odd number.");
+        }
+        Map<String, String> map = new HashMap<String, String>();
+        int len = pairs.length / 2;
+        for (int i = 0; i < len; i++) {
+            map.put(pairs[2 * i], pairs[2 * i + 1]);
+        }
+        return addParameters(map);
+    }
 }

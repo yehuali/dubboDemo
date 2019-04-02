@@ -1,1 +1,2 @@
+stub=com.examle.core.rpc.proxy.wrapper.StubProxyFactoryWrapper
 javassist=com.examle.core.rpc.proxy.javassist.JavassistProxyFactory

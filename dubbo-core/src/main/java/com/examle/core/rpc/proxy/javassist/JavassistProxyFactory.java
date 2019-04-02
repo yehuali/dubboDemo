@@ -28,6 +28,16 @@ public class JavassistProxyFactory extends AbstractProxyFactory {
         };
     }
 
+    /**
+     * 每个代理类都要关联一个InvocationHandler，并且InvocationHandler接口只有一个invoke方法
+     *  -->当触发被代理类的任意一个接口的时候,实际调用的是InvokerInvocationHandler实现类的invoker方法
+     *  public Object newInstance(java.lang.reflect.InvocationHandler h){
+     * 	    return new com.examle.core.common.bytecode.proxy0($1);
+     * }
+     * @param invoker
+     * @param interfaces
+     * @return
+     */
     @Override
     public Object getProxy(Invoker invoker, Class[] interfaces) {
         return  Proxy.getProxy(interfaces).newInstance(new InvokerInvocationHandler(invoker));
