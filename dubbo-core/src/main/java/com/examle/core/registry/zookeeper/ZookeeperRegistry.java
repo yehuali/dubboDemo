@@ -29,4 +29,9 @@ public class ZookeeperRegistry extends FailbackRegistry {
             }
         });
     }
+
+    @Override
+    public void register(URL url) {
+
+    }
 }

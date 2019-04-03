@@ -43,6 +43,17 @@ public class RpcInvocation implements Invocation, Serializable {
         attachments.put(key, value);
     }
 
+    public void addAttachments(Map<String, String> attachments) {
+        if (attachments == null) {
+            return;
+        }
+        if (this.attachments == null) {
+            this.attachments = new HashMap<String, String>();
+        }
+        this.attachments.putAll(attachments);
+    }
+
+
     @Override
     public Object[] getArguments() {
         return new Object[0];

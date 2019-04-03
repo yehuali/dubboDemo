@@ -1,1 +1,2 @@
+mock=com.examle.core.rpc.cluster.support.wrapper.MockClusterWrapper
 failover=com.examle.core.rpc.cluster.support.FailoverCluster
