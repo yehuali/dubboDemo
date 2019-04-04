@@ -64,6 +64,8 @@ public class RegistryProtocol implements Protocol {
         }
         directory.buildRouterChain(subscribeUrl);
         //向zookeeper订阅服务节点信息并watch变更，实现服务自动发现
+        directory.subscribe(subscribeUrl.addParameter(CATEGORY_KEY,
+                PROVIDERS_CATEGORY + "," + CONFIGURATORS_CATEGORY + "," + ROUTERS_CATEGORY));
 
         Invoker invoker = cluster.join(directory);
         return invoker;

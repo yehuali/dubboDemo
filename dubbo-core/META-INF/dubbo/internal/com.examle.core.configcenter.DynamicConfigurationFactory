@@ -1,0 +1,1 @@
+zookeeper=com.examle.core.configcenter.support.zookeeper.ZookeeperDynamicConfigurationFactory

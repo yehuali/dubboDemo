@@ -5,6 +5,7 @@ import com.examle.core.rpc.*;
 import com.examle.core.rpc.cluster.Directory;
 import org.aopalliance.intercept.Invocation;
 
+import java.util.List;
 import java.util.Map;
 
 public abstract class AbstractClusterInvoker<T> implements Invoker<T> {
@@ -32,8 +33,13 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> {
         if (contextAttachments != null && contextAttachments.size() != 0) {
             ((RpcInvocation) invocation).addAttachments(contextAttachments);
         }
+        List<Invoker<T>> invokers = list(invocation);
 
         return null;
+    }
+
+    protected List<Invoker<T>> list(Invocation invocation) throws RpcException {
+        return directory.list(invocation);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.example.dubbo.demo;
 
+import com.examle.core.common.Constants;
+import com.examle.core.rpc.RpcContext;
 import com.example.api.DemoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,7 +18,7 @@ public class TestController {
     @RequestMapping("/demo")
     public ModelAndView testDemo() {
         ModelAndView modelAndView = new ModelAndView("index");
-//        org.apache.dubbo.rpc.RpcContext.getContext().setAttachment(Constants.TAG_KEY, "gray");
+        RpcContext.getContext().setAttachment(Constants.TAG_KEY, "gray");
         modelAndView.addObject("result", demoService.sayHello("Dubbo Meetup"));
         return modelAndView;
     }

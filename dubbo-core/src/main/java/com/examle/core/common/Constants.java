@@ -120,7 +120,17 @@ public class Constants {
 
     public static final String CATEGORY_KEY = "category";
 
+    public static final String PROVIDERS_CATEGORY = "providers";
+
     public static final String CONSUMERS_CATEGORY = "consumers";
 
+    public static final String CONFIGURATORS_CATEGORY = "configurators";
+
+    public static final String ROUTERS_CATEGORY = "routers";
+
     public static final String CHECK_KEY = "check";
+
+    public static final String TAG_KEY = "dubbo.tag";
+
+    public static final String CONFIGURATORS_SUFFIX = ".configurators";
 }

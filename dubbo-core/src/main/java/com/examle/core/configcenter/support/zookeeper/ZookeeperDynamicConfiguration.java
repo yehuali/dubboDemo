@@ -2,6 +2,8 @@ package com.examle.core.configcenter.support.zookeeper;
 
 import com.examle.core.common.Constants;
 import com.examle.core.common.URL;
+import com.examle.core.common.utils.StringUtils;
+import com.examle.core.configcenter.ConfigurationListener;
 import com.examle.core.configcenter.DynamicConfiguration;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
@@ -21,7 +23,11 @@ public class ZookeeperDynamicConfiguration implements DynamicConfiguration {
 
     private CuratorFramework client;
 
+    //最后的根路径是/configRootPath/config
+    private String rootPath;
     private TreeCache treeCache;
+
+    private CacheListener cacheListener;
 
     ZookeeperDynamicConfiguration(URL url) {
         RetryPolicy policy = new ExponentialBackoffRetry(1000, 3);
@@ -60,4 +66,31 @@ public class ZookeeperDynamicConfiguration implements DynamicConfiguration {
         return null;
     }
 
+    //对于服务治理，此实现不支持多组。所以目前没有使用group。
+    @Override
+    public void addListener(String key, String group, ConfigurationListener listener) {
+        cacheListener.addListener(key, listener);
+    }
+
+
+    @Override
+    public String getConfig(String key, String group, long timeout) throws IllegalStateException {
+        /**
+         * 当group不为空时，我们从Config Center获取启动配置
+         * 例如：group=dubbo, key=dubbo.properties
+         */
+        if (StringUtils.isNotEmpty(group)) {
+            key = group + "/" + key;
+        }
+        /**
+         * 当group为null时，我们获取治理规则
+         * 1. key=org.apache.dubbo.DemoService.configurators
+         * 2. key = org.apache.dubbo.DemoService.condition-router
+         */
+        else{
+            int i = key.lastIndexOf(".");
+            key = key.substring(0, i) + "/" + key.substring(i + 1);
+        }
+        return (String) getInternalProperty(rootPath + "/" + key);
+    }
 }

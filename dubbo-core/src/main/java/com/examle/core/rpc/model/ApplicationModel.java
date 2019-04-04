@@ -10,11 +10,18 @@ public class ApplicationModel {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(ApplicationModel.class);
 
+
+    private static String application;
+
     private static final ConcurrentMap<String, ProviderModel> providedServices = new ConcurrentHashMap<>();
 
     public static void initProviderModel(String serviceName, ProviderModel providerModel) {
         if (providedServices.putIfAbsent(serviceName, providerModel) != null) {
             LOGGER.warn("Already register the same:" + serviceName);
         }
+    }
+
+    public static String getApplication() {
+        return application;
     }
 }

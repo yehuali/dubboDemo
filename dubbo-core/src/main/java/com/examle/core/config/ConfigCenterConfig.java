@@ -13,6 +13,23 @@ public class ConfigCenterConfig extends AbstractConfig {
 
     private String protocol;
 
+    public String getProtocol() {
+        return protocol;
+    }
+
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
+
+    @Parameter(excluded = true)
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     @Override
     @Parameter(excluded = true)
     public boolean isValid() {

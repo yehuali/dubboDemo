@@ -78,6 +78,7 @@ public class ReferenceConfig<T> extends AbstractReferenceConfig {
     }
 
     public void checkAndUpdateSubConfigs() {
+        startConfigCenter();
         // get consumer's global configuration
         checkDefault();
     }

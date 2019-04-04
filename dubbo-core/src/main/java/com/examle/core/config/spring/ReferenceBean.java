@@ -2,6 +2,7 @@ package com.examle.core.config.spring;
 
 import com.examle.core.common.extension.SpringExtensionFactory;
 import com.examle.core.common.utils.StringUtils;
+import com.examle.core.config.ConfigCenterConfig;
 import com.examle.core.config.ReferenceConfig;
 import com.examle.core.config.RegistryConfig;
 import org.springframework.beans.BeansException;
@@ -62,6 +63,15 @@ public class ReferenceBean<T> extends ReferenceConfig<T> implements FactoryBean,
                 }
             }
 
+        }
+
+        if (getConfigCenter() == null) {
+            Map<String, ConfigCenterConfig> configenterMap = applicationContext == null ? null : BeanFactoryUtils.beansOfTypeIncludingAncestors(applicationContext, ConfigCenterConfig.class, false, false);
+            if (configenterMap != null && configenterMap.size() == 1) {
+                super.setConfigCenter(configenterMap.values().iterator().next());
+            }else if (configenterMap != null && configenterMap.size() > 1) {
+                throw new IllegalStateException("Multiple ConfigCenter found:" + configenterMap);
+            }
         }
     }
 

@@ -5,6 +5,7 @@ import com.examle.core.common.utils.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Environment {
@@ -26,6 +27,10 @@ public class Environment {
 
     public static Environment getInstance() {
         return INSTANCE;
+    }
+
+    public Optional<Configuration> getDynamicConfiguration() {
+        return Optional.ofNullable(dynamicConfiguration);
     }
 
 

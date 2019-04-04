@@ -26,4 +26,13 @@ public class RpcContext {
     public Map<String, String> getAttachments() {
         return attachments;
     }
+
+    public RpcContext setAttachment(String key, String value) {
+        if (value == null) {
+            attachments.remove(key);
+        } else {
+            attachments.put(key, value);
+        }
+        return this;
+    }
 }
